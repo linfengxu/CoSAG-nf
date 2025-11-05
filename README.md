@@ -14,6 +14,8 @@ CoSAG-nf is a scalable Nextflow pipeline designed for processing high-throughput
 > For reproducibility and version consistency, users **MUST** download containers from the official repository. 
 > Building custom containers or using alternative sources is **STRICTLY PROHIBITED** and **NOT SUPPORTED**.
 
+Example Report: http://www.biostatistics.online/CoSAG/example_report.html
+
 ### 🔬 Key Features
 
 - **Individual Assembly**: Individual SAG assembly using SPAdes
@@ -618,7 +620,7 @@ If you use CoSAG-nf in your research, please cite:
 
 ## 🔄 Changelog
 
-### v1.0.0 (2024-11-05)
+### v1.0.0 (2025-11-05)
 - Initial release
 - Support for SPAdes individual assembly
 - Integrated CheckM2 quality assessment
@@ -629,5 +631,3 @@ If you use CoSAG-nf in your research, please cite:
 - Generated comprehensive HTML reports
 
 ---
-
-**Note**: This pipeline is under active development, and features and interfaces may change. It is recommended to thoroughly test before using in production environments.
