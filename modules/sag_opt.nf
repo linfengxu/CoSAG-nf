@@ -1,7 +1,7 @@
 process COSAG_OPTIMIZATION {
     tag "cosag_opt_${json_file.baseName}"
     label 'process_high'
-    container "${params.python_new.container}"
+    container "${params.checkm2_spades.container}"
     //publishDir "${params.outdir}/${params.output_structure.co_assemblies}/optimization", mode: 'copy'
     publishDir "${params.output_structure?.co_assemblies ?: params.outdir}/optimization",
         mode: 'copy'
