@@ -3,6 +3,7 @@
 [![Nextflow](https://img.shields.io/badge/nextflow%20DSL2-%E2%89%A523.04.0-23aa62.svg)](https://www.nextflow.io/)
 [![Singularity](https://img.shields.io/badge/singularity-%E2%89%A53.8.0-1d355c.svg)](https://sylabs.io/docs/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Containers](https://img.shields.io/badge/containers-Zenodo-blue.svg)](https://zenodo.org/records/17540422)
 
 ## 📋 Overview
 
@@ -333,6 +334,8 @@ hierarchical_clustering {
 ## 🐳 Container Images
 
 > **⚠️ CRITICAL REQUIREMENT**: All required Singularity container images must be downloaded before running the pipeline. The `sif_dir` parameter in the configuration file is **ESSENTIAL** and must point to the directory containing all container images.
+> 
+> **📦 Official Repository**: All container images are hosted on Zenodo at: https://zenodo.org/records/17540422
 
 ### Required Container Images
 
@@ -362,19 +365,30 @@ The pipeline uses the following Singularity container images:
 mkdir -p /path/to/singularity/images
 cd /path/to/singularity/images
 
-# Download all required container images from official repository
+# Download all required container images from official Zenodo repository
 # ⚠️ IMPORTANT: Use ONLY these official download links for reproducibility
-wget [OFFICIAL_DOWNLOAD_URL]/spades_3.15.5.sif
-wget [OFFICIAL_DOWNLOAD_URL]/checkm2_1.0.2.sif
-wget [OFFICIAL_DOWNLOAD_URL]/sourmash_4.9.2--hdfd78af_0.sif
-wget [OFFICIAL_DOWNLOAD_URL]/gtdbtk_with_ps.sif
-wget [OFFICIAL_DOWNLOAD_URL]/python3.8_v1_Bio_0813.sif
-
+wget https://zenodo.org/records/17540422/files/spades_3.15.5.sif
+wget https://zenodo.org/records/17540422/files/checkm2_1.0.2.sif
+wget https://zenodo.org/records/17540422/files/sourmash_4.9.2--hdfd78af_0.sif
+wget https://zenodo.org/records/17540422/files/gtdbtk_with_ps.sif
+wget https://zenodo.org/records/17540422/files/python3.8_v1_Bio_0813.sif
+wget https://zenodo.org/records/17540422/files/python_20251106.sif
 # Verify all images are downloaded successfully
 ls -lh *.sif
 
 # Check file integrity (optional but recommended)
 md5sum *.sif > container_checksums.md5
+
+# Quick download script (copy and paste all at once)
+# This will download all containers in parallel for faster download
+wget https://zenodo.org/records/17540422/files/spades_3.15.5.sif &
+wget https://zenodo.org/records/17540422/files/checkm2_1.0.2.sif &
+wget https://zenodo.org/records/17540422/files/sourmash_4.9.2--hdfd78af_0.sif &
+wget https://zenodo.org/records/17540422/files/gtdbtk_with_ps.sif &
+wget https://zenodo.org/records/17540422/files/python3.8_v1_Bio_0813.sif &
+wget https://zenodo.org/records/17540422/files/python_20251106.sif
+wait  # Wait for all downloads to complete
+echo "All containers downloaded successfully!"
 ```
 
 **Alternative Download Methods**
@@ -383,18 +397,20 @@ If `wget` is not available, you can use:
 
 ```bash
 # Using curl
-curl -O [OFFICIAL_DOWNLOAD_URL]/spades_3.15.5.sif
-curl -O [OFFICIAL_DOWNLOAD_URL]/checkm2_1.0.2.sif
-curl -O [OFFICIAL_DOWNLOAD_URL]/sourmash_4.9.2--hdfd78af_0.sif
-curl -O [OFFICIAL_DOWNLOAD_URL]/gtdbtk_with_ps.sif
-curl -O [OFFICIAL_DOWNLOAD_URL]/python3.8_v1_Bio_0813.sif
+curl -O https://zenodo.org/records/17540422/files/spades_3.15.5.sif
+curl -O https://zenodo.org/records/17540422/files/checkm2_1.0.2.sif
+curl -O https://zenodo.org/records/17540422/files/sourmash_4.9.2--hdfd78af_0.sif
+curl -O https://zenodo.org/records/17540422/files/gtdbtk_with_ps.sif
+curl -O https://zenodo.org/records/17540422/files/python3.8_v1_Bio_0813.sif
+curl -O https://zenodo.org/records/17540422/files/python_20251106.sif
 
 # Or using rsync (if available)
-rsync -avP [OFFICIAL_DOWNLOAD_URL]/spades_3.15.5.sif ./
-rsync -avP [OFFICIAL_DOWNLOAD_URL]/checkm2_1.0.2.sif ./
-rsync -avP [OFFICIAL_DOWNLOAD_URL]/sourmash_4.9.2--hdfd78af_0.sif ./
-rsync -avP [OFFICIAL_DOWNLOAD_URL]/gtdbtk_with_ps.sif ./
-rsync -avP [OFFICIAL_DOWNLOAD_URL]/python3.8_v1_Bio_0813.sif ./
+rsync -avP https://zenodo.org/records/17540422/files/spades_3.15.5.sif ./
+rsync -avP https://zenodo.org/records/17540422/files/checkm2_1.0.2.sif ./
+rsync -avP https://zenodo.org/records/17540422/files/sourmash_4.9.2--hdfd78af_0.sif ./
+rsync -avP https://zenodo.org/records/17540422/files/gtdbtk_with_ps.sif ./
+rsync -avP https://zenodo.org/records/17540422/files/python3.8_v1_Bio_0813.sif ./
+rsync -avP https://zenodo.org/records/17540422/files/python_20251106.sif ./
 ```
 
 ### 🔧 Configure Container Path
@@ -419,7 +435,7 @@ Before running the pipeline, verify that all containers are accessible:
 ```bash
 # Check if all required containers exist
 CONTAINER_DIR="/path/to/singularity/images"
-for container in spades_3.15.5.sif checkm2_1.0.2.sif sourmash_4.9.2--hdfd78af_0.sif gtdbtk_with_ps.sif python3.8_v1_Bio_0813.sif; do
+for container in spades_3.15.5.sif checkm2_1.0.2.sif sourmash_4.9.2--hdfd78af_0.sif gtdbtk_with_ps.sif python3.8_v1_Bio_0813.sif python_20251106.sif; do
     if [ -f "$CONTAINER_DIR/$container" ]; then
         echo "✅ Found: $container"
     else
@@ -430,9 +446,15 @@ done
 # Test container functionality (using official containers only)
 singularity exec $CONTAINER_DIR/spades_3.15.5.sif spades.py --version
 singularity exec $CONTAINER_DIR/checkm2_1.0.2.sif checkm2 --version
+singularity exec $CONTAINER_DIR/sourmash_4.9.2--hdfd78af_0.sif sourmash --version
 
-# If any container fails, re-download from official repository
+# Check total size of downloaded containers
+du -sh $CONTAINER_DIR/*.sif
+echo "Total container size: $(du -sh $CONTAINER_DIR | cut -f1)"
+
+# If any container fails, re-download from official Zenodo repository
 # DO NOT attempt to build or use alternative containers
+# Official repository: https://zenodo.org/records/17540422
 ```
 
 ### ⚠️ Important Notice About Container Usage
@@ -514,11 +536,11 @@ nextflow run main.nf -profile singularity --max_cpus 8 --max_memory 64.GB
 # Check if all containers exist in sif_dir
 ls -la /path/to/your/singularity/images/*.sif
 
-# If containers are missing, download them from official repository ONLY
+# If containers are missing, download them from official Zenodo repository ONLY
 # ⚠️ DO NOT use Docker Hub or build containers manually
 # Go to Container Images section and download from official links
 cd /path/to/your/singularity/images
-wget [OFFICIAL_DOWNLOAD_URL]/[missing_container].sif
+wget https://zenodo.org/records/17540422/files/[missing_container].sif
 ```
 
 **Incorrect sif_dir Path**
@@ -599,6 +621,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📞 Support and Contact
 
 - **Documentation**: [https://github.com/linfengxu/CoSAG-nf](https://github.com/linfengxu/CoSAG-nf)
+- **zenodo**: [https://zenodo.org/records/17540422]
 - **Email**: quanzx@fudan.edu.cn
 
 
