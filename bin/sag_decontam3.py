@@ -268,10 +268,7 @@ class ClusterOptimizer:
         """运行SPAdes进行co-assembly"""
         assembly_dir = os.path.join(self.output_dir, f"{output_prefix}_spades")
         
-        cmd = [
-            "singularity",'exec','-B','/cpfs01',
-            '/cpfs01/projects-SSD/cfff-86962b7a8e68_SSD/public/singularity_sif/spades_3.15.5.sif',
-            "spades.py",
+        cmd = ["/opt/conda/envs/spades/bin/spades.py",
             "--sc", "--careful",
             "-1", r1_file,
             "-2", r2_file,
@@ -312,8 +309,6 @@ class ClusterOptimizer:
         os.makedirs(checkm_dir, exist_ok=True)
         
         cmd = [
-            "singularity",'exec','-B','/cpfs01',
-            '/cpfs01/projects-SSD/cfff-86962b7a8e68_SSD/public/singularity_sif/checkm2_1.0.2.sif',
             "checkm2", "predict",
             "--input", contigs_file,
             "--output-directory", checkm_dir,

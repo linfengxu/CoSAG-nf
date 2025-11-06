@@ -3,6 +3,7 @@
 nextflow.enable.dsl = 2
 
 process PARSE_FILTERED_CLUSTERS {
+    container "${params.python.container}"
     input:
     path filtered_json
     
@@ -35,6 +36,7 @@ process PARSE_FILTERED_CLUSTERS {
 }
 
 process PARSE_SUBCLUSTER_FILES {
+    container "${params.python.container}"
     input:
     path subcluster_files
     

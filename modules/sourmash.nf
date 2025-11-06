@@ -105,6 +105,7 @@ process SOURMASH_COMPARE_MATRIX {
 process SOURMASH_MATRIX_CONVERT {
     tag "sourmash_matrix_convert"
     label 'process_medium'
+    container "${params.python.container}"
     //publishDir "${params.outdir}/sourmash_similarity", mode: 'copy'
     publishDir "${params.output_structure?.similarity_analysis ?: params.outdir}/similarity_matrices", mode: 'copy'
 

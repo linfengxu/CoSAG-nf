@@ -4,7 +4,7 @@ nextflow.enable.dsl = 2
 
 process PREPARE_CLUSTER_JSON {
     tag "prepare_cluster_json"
-    publishDir "${params.outdir}/prepared_data", mode: 'copy'
+    //publishDir "${params.output_structure?.clustering_analysis ?: params.outdir}/prepared_data", mode: 'copy'
     container "${params.python.container}"
     
     input:

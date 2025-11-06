@@ -1,8 +1,10 @@
 process COSAG_OPTIMIZATION {
     tag "cosag_opt_${json_file.baseName}"
     label 'process_high'
-    publishDir "${params.outdir}/sag_optimization2", mode: 'copy'
-    
+    container "${params.python_new.container}"
+    //publishDir "${params.outdir}/${params.output_structure.co_assemblies}/optimization", mode: 'copy'
+    publishDir "${params.output_structure?.co_assemblies ?: params.outdir}/optimization",
+        mode: 'copy'
     input:
     path json_file
     
@@ -29,8 +31,9 @@ process COSAG_OPTIMIZATION {
 process COLLECT_ALL_ASSEMBLIES {
     tag "collect_all_assemblies"
     label 'process_low'
-    publishDir "${params.outdir}/merged_assemblies", mode: 'copy'
-    
+    container "${params.python.container}"
+    publishDir "${params.output_structure?.co_assemblies ?: params.outdir}/merged_assemblies",
+        mode: 'copy'
     input:
     path bset_fastas
     path json_files  // 改为独立的 path
