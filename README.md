@@ -14,7 +14,15 @@ CoSAG-nf is a scalable Nextflow pipeline designed for processing high-throughput
 > For reproducibility and version consistency, users **MUST** download containers from the official repository. 
 > Building custom containers or using alternative sources is **STRICTLY PROHIBITED** and **NOT SUPPORTED**.
 
-Example Report: http://www.biostatistics.online/CoSAG/example_report.html
+### 📊 Example Output Report
+**🔗 Preview the Results**: [Interactive HTML Report](http://www.biostatistics.online/CoSAG/example_report.html)
+
+This comprehensive example report demonstrates the full analysis results you can expect from the CoSAG-nf pipeline, including:
+- Assembly quality statistics and metrics
+- Interactive clustering dendrograms and heatmaps  
+- Taxonomic classification results with phylogenetic context
+- Co-assembly optimization outcomes
+- Integrated visualization dashboards
 
 ### 🔬 Key Features
 
@@ -166,12 +174,14 @@ source ~/.bashrc
 > - ✅ **Configured the `sif_dir` parameter** to point to your container directory
 > - ✅ Downloaded required databases (CheckM2 and GTDB-Tk)
 > 
+> **💡 TIP**: Preview the expected results by checking our [Example Report](http://www.biostatistics.online/CoSAG/example_report.html) before running the pipeline.
+> 
 > **The pipeline will NOT work without proper container setup!**
 
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-repo/CoSAG-nf.git
+git clone https://github.com/linfengxu/CoSAG-nf.git
 cd CoSAG-nf
 ```
 
@@ -259,7 +269,6 @@ results/
 ├── 06_final_results/            # Final integrated results
 │   ├── json_reports/            # JSON format reports
 │   ├── html_reports/            # HTML visualization reports
-│   └── summary_tables/          # Summary tables
 └── reports/                     # Pipeline execution reports
     ├── execution_report.html    # Execution report
     ├── execution_timeline.html  # Timeline report
@@ -270,7 +279,8 @@ results/
 
 - **Final Results**: `06_final_results/json_reports/final_result.json`
 - **HTML Report**: `06_final_results/html_reports/embedded_report.html`
-- **Summary Report**: `06_final_results/summary_tables/pipeline_summary_report.txt`
+
+> **💡 Preview Expected Results**: See what your HTML report will look like by viewing our [Example Report](http://www.biostatistics.online/CoSAG/example_report.html) generated from test data.
 
 ## ⚙️ Parameter Configuration
 
@@ -538,13 +548,6 @@ nextflow run main.nf -profile singularity -with-trace -with-report -with-timelin
 
 ## 📈 Performance Optimization
 
-### Resource Configuration Recommendations
-
-| Data Scale | CPU Cores | Memory | Storage | Estimated Time |
-|------------|-----------|--------|---------|----------------|
-| Small (10-50 SAGs) | 8-16 | 64-128GB | 200GB | 4-8 hours |
-| Medium (50-200 SAGs) | 16-32 | 128-256GB | 500GB | 8-16 hours |
-| Large (200+ SAGs) | 32-64 | 256-512GB | 1TB+ | 16-48 hours |
 
 ### Optimization Tips
 
@@ -584,14 +587,8 @@ We welcome community contributions! Please follow these steps:
 
 ```bash
 # Clone development version
-git clone https://github.com/your-repo/CoSAG-nf.git
+git clone https://github.com/linfengxu/CoSAG-nf.git
 cd CoSAG-nf
-
-# Install development dependencies
-pip install -r requirements-dev.txt
-
-# Run tests
-nextflow run main.nf -profile test
 ```
 
 ## 📄 License
@@ -600,23 +597,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support and Contact
 
-- **GitHub Issues**: [https://github.com/your-repo/CoSAG-nf/issues](https://github.com/your-repo/CoSAG-nf/issues)
-- **Documentation**: [https://your-docs.com/CoSAG-nf](https://your-docs.com/CoSAG-nf)
-- **Email**: your-email@example.com
+- **Documentation**: [https://github.com/linfengxu/CoSAG-nf](https://github.com/linfengxu/CoSAG-nf)
+- **Email**: quanzx@fudan.edu.cn
 
-## 📚 Citation
-
-If you use CoSAG-nf in your research, please cite:
-
-```bibtex
-@article{cosag-nf2024,
-  title={CoSAG-nf: A Scalable Nextflow Pipeline for Co-assembly, Optimization, and Interactive Visualization of High-Throughput Single-Cell Genomes},
-  author={Your Name and Collaborators},
-  journal={Journal Name},
-  year={2024},
-  doi={10.xxxx/xxxxx}
-}
-```
 
 ## 🔄 Changelog
 
