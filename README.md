@@ -24,6 +24,7 @@ This comprehensive example report demonstrates the full analysis results you can
 - Co-assembly optimization outcomes
 - Integrated visualization dashboards
 
+![Preview the Results](img/html_report.jpg)
 ### 🔬 Key Features
 
 - **Individual Assembly**: Individual SAG assembly using SPAdes
