@@ -9,7 +9,7 @@
 
 CoSAG-nf is a scalable Nextflow pipeline designed for processing high-throughput single-cell amplified genomes (SAGs). The pipeline performs individual assembly, similarity analysis, hierarchical clustering, co-assembly optimization, and taxonomic classification to generate high-quality metagenome-assembled genomes (MAGs) from single-cell data.
 
-![CoSAG-nf overview](img/pipeline.png)
+![CoSAG-nf overview](img/pipeline.jpg)
 
 > **🔒 CONTAINER POLICY**: This pipeline requires **OFFICIAL PRE-BUILT CONTAINER IMAGES ONLY**. 
 > For reproducibility and version consistency, users **MUST** download containers from the official repository. 
