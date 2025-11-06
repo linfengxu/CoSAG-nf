@@ -621,7 +621,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📞 Support and Contact
 
 - **Documentation**: [https://github.com/linfengxu/CoSAG-nf](https://github.com/linfengxu/CoSAG-nf)
-- **zenodo**: [https://zenodo.org/records/17540422]
+- **zenodo**: https://zenodo.org/records/17540422
 - **Email**: quanzx@fudan.edu.cn
 
 
