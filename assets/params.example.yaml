@@ -10,7 +10,8 @@ gtdb_database: '/path/to/gtdbtk_r220_data'
 
 # Co-assembly rounds
 cosag_rounds: 1          # internal rounds 1–3
-round: 1                 # set to 2 to also run COSAG_ROUND2 under <outdir>/round2/
+round: 1                 # 2 = second sourmash pass on R1 co-assembly contigs → <outdir>/round2/
+# sourmash_ksize: 31     # optional: often better for SAG-level clustering than default 51
 
 # Quality thresholds
 min_completeness: 50

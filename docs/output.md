@@ -19,7 +19,7 @@ The pipeline is built using [Nextflow](https://www.nextflow.io/) and processes d
 7. [Logs and diagnostics](#logs-and-diagnostics) — Filtering logs, CheckM2 run logs, parsed cluster tables
 8. [Pipeline information](#pipeline-information) — Nextflow execution reports and run metadata
 
-When `--round 2` is set, the pipeline first completes Round 1 (steps 1–8 above), then runs an additional **Round 2** workflow. Round 2 outputs are written under `<OUTDIR>/round2/` with the same numbered subdirectory layout (`02_similarity_analysis` … `06_final_results`).
+When `--round 2` is set, the pipeline first completes Round 1 (steps 1–8 above), then runs an additional **Round 2** workflow: a second Sourmash clustering pass on Round 1 **co-assembly contigs** (cluster representatives), followed by co-assembly, taxonomy, and reporting. Round 2 outputs are written under `<OUTDIR>/round2/` with the same numbered subdirectory layout (`02_similarity_analysis` … `06_final_results`). See the README [two-round sourmash section](../README.md#two-round-sourmash-clustering---round).
 
 When `--cosag_rounds` is greater than 1, additional internal co-assembly rounds (Round 2/3) are executed within the main workflow. Per-round cluster JSON files are stored under `04_co_assemblies/cluster_json/round{N}/`.
 

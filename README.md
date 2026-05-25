@@ -12,6 +12,8 @@
 
 **CoSAG-nf** (`linfengxu/CoSAG-nf`) is a scalable [Nextflow](https://www.nextflow.io/) pipeline for processing high-throughput single-cell amplified genomes (SAGs). It performs individual assembly, MinHash similarity analysis, hierarchical clustering, iterative co-assembly, TNF-based SAG subset optimization, GTDB-Tk taxonomic classification, and generates an interactive HTML report for exploring high-quality co-assembled SAG (CoSAG) genomes.
 
+![CoSAG-nf pipeline workflow](img/pipeline.jpg)
+
 > **Containers**: Custom images on Quay.io plus Biocontainers for heavy tools — see [Container images](#container-images). Use `-profile docker` or `-profile singularity` on HPC.
 
 ### Example output report
@@ -19,6 +21,8 @@
 **Preview the results**: [Interactive HTML report](http://www.biostatistics.online/CoSAG/example_report.html)
 
 The example report demonstrates assembly quality metrics, clustering summaries, taxonomic classification, co-assembly optimization outcomes, and integrated dashboards.
+
+![CoSAG interactive HTML report](img/html_report.jpg)
 
 ### Key features
 
@@ -39,7 +43,7 @@ The example report demonstrates assembly quality metrics, clustering summaries, 
 4. **Quality & taxonomy** — extract CoSAG contigs → barrnap → GTDB-Tk → merge into `cluster_data_gtdbtk.json`
 5. **Report** — generate `cosag_report.html`
 
-When `--round 2` is enabled, Round 1 completes first; Round 2 re-clusters Round 1 co-assembly contigs and writes results under `<OUTDIR>/round2/`.
+When `--round 2` is enabled, Round 1 completes first; a second MinHash clustering pass is run on Round 1 co-assembly contigs (cluster representatives), then co-assembly and reporting run again under `<OUTDIR>/round2/`. See [Two-round sourmash clustering](#two-round-sourmash-clustering---round).
 
 ## System requirements
 
@@ -180,11 +184,11 @@ nextflow run linfengxu/CoSAG-nf \
 nextflow run main.nf -profile singularity --input samples.tsv --outdir results
 ```
 
-**Round 2 re-clustering workflow** (Round 1 + standalone Round 2 under `results/round2/`)
+**Two-round sourmash clustering** (Round 1 + second pass on co-assembly contigs → `results/round2/`)
 
 ```bash
 nextflow run linfengxu/CoSAG-nf -profile singularity \
-    --input samples.tsv --outdir results --round 2
+    --input samples.tsv --outdir results --round 2 --sourmash_ksize 31
 ```
 
 **Background run**
@@ -242,7 +246,8 @@ Detailed output documentation: [`docs/output.md`](docs/output.md).
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
-| `--round` | `1` | Set to `2` to run Round 2 workflow after Round 1 |
+| `--round` | `1` | `2` = second sourmash pass on Round 1 co-assembly contigs; outputs under `round2/` |
+| `--sourmash_ksize` | `51` | MinHash k-mer size; try `31` for SAG-level clustering (see [two-round section](#two-round-sourmash-clustering---round)) |
 | `--cosag_optimize` | `true` | Enable TNF-based SAG subset optimization |
 | `--min_completeness` | `50` | Minimum completeness for CoSAG selection (%) |
 | `--max_contamination` | `10` | Maximum contamination for CoSAG selection (%) |
@@ -287,6 +292,36 @@ Also tune `--cluster_criterion` (default `inconsistent`) and `--cluster_threshol
 > This repository does not ship formal rules for choosing linkage on a given dataset. For publication or production runs, compare candidate settings (cluster count, cophenetic correlation in the validation report, and biological plausibility of co-assembly groups).
 
 > **Note:** TNF co-assembly optimization (`cosag_optimizer.py`) performs a separate hierarchical clustering step with `ward` linkage on tetranucleotide frequencies — independent of `--cluster_linkage_method`.
+
+### Two-round sourmash clustering (`--round`)
+
+MinHash clustering (step 2) supports an optional **two-round** sourmash strategy to improve SAG-level cluster resolution before co-assembly and TNF optimization.
+
+| Mode | Behaviour |
+|------|-----------|
+| `--round 1` (default) | Single-pass MinHash clustering on all input SAG contigs. |
+| `--round 2` | After Round 1 finishes (assembly → clustering → co-assembly → report), runs a **second** sourmash clustering pass on **Round 1 co-assembly contigs** (one representative FASTA per cluster), then repeats co-assembly, quality/taxonomy, and reporting under `<OUTDIR>/round2/`. |
+
+**Rationale:** Single-cell amplified genomes (SAGs) often have incomplete and uneven coverage, which weakens MinHash sketch overlap in a single pass. Re-sketching and re-clustering **cluster-level co-assembly contigs** can recover related groups that were split in Round 1 and yields more coherent boundaries before downstream TNF-based optimization.
+
+**Distances:** The pipeline uses Jaccard similarity from Sourmash; hierarchical clustering works on **distance = 1 − similarity** (see `--distance_metric`, default `jaccard`).
+
+**`k`-mer size:** For SAG-level clustering we recommend `--sourmash_ksize 31`; `51` (the default) was overly stringent in our oral microbiome benchmark. Tune on your data together with `--cluster_threshold`.
+
+> **Do not confuse** `--round` with `--cosag_rounds`: `--cosag_rounds` controls **internal** co-assembly iterations within Round 1 (`round2/` / `round3/` under `04_co_assemblies/`), not the standalone second workflow under `<OUTDIR>/round2/`.
+
+**Usage:**
+
+```bash
+nextflow run linfengxu/CoSAG-nf \
+    -profile singularity \
+    --input samples.tsv \
+    --outdir results \
+    --round 2 \
+    --sourmash_ksize 31 \
+    --checkm2_db /path/to/checkm2_database/uniref100.KO.1.dmnd \
+    --gtdb_database /path/to/gtdbtk_r220_data
+```
 
 ## Container images
 

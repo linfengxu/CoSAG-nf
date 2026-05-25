@@ -86,6 +86,7 @@
                     "type": "integer",
                     "default": 51,
                     "description": "K-mer size for Sourmash MinHash sketches.",
+                    "help_text": "For SAG-level clustering, ksize=31 is often more sensitive than 51 (default); 51 was overly stringent in an oral microbiome benchmark. Distances use 1 - Jaccard similarity.",
                     "fa_icon": "fas fa-sliders-h"
                 },
                 "sourmash_scaled": {
@@ -222,7 +223,8 @@
                 "round": {
                     "type": "integer",
                     "default": 1,
-                    "description": "Main entry mode: 1=run COSAG_NF; 2=run COSAG_NF then COSAG_ROUND2.",
+                    "description": "Two-round sourmash strategy: 1=cluster all SAG contigs once; 2=after Round 1, re-cluster Round 1 co-assembly contigs and write results under <outdir>/round2/.",
+                    "help_text": "Round 2 improves resolution when sparse SAG sketches miss true neighbours. Distinct from cosag_rounds (internal co-assembly iterations only).",
                     "minimum": 1,
                     "maximum": 2,
                     "fa_icon": "fas fa-code-branch"

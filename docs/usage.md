@@ -108,14 +108,18 @@ nextflow run main.nf -profile singularity --input samples.tsv --outdir results .
 
 ### Multi-round and Round 2
 
+**Internal co-assembly rounds** (`--cosag_rounds` 2–3): extra co-assembly iterations inside Round 1; JSON under `04_co_assemblies/cluster_json/round2/` etc.
+
+**Two-round sourmash clustering** (`--round 2`): after Round 1 completes, a second MinHash pass clusters **Round 1 co-assembly contigs** (cluster representatives), then co-assembly and reporting run again under `<outdir>/round2/`. Useful when uneven SAG coverage weakens first-pass sketch overlap. Distances use **1 − Jaccard similarity**. For SAG-level clustering, try `--sourmash_ksize 31` (default `51` was strict in an oral microbiome benchmark).
+
 ```bash
 # Internal co-assembly rounds 2–3 (same outdir, round-specific cluster JSON)
-nextflow run linfengxu/cosag-nf -profile singularity \
+nextflow run linfengxu/CoSAG-nf -profile singularity \
     --input samples.tsv --outdir results --cosag_rounds 2
 
-# Round 1 + standalone Round 2 re-clustering (results/round2/)
-nextflow run linfengxu/cosag-nf -profile singularity \
-    --input samples.tsv --outdir results --round 2
+# Round 1 + second sourmash pass on co-assembly contigs (results/round2/)
+nextflow run linfengxu/CoSAG-nf -profile singularity \
+    --input samples.tsv --outdir results --round 2 --sourmash_ksize 31
 ```
 
 ### Parameter file

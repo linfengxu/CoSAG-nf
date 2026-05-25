@@ -1,8 +1,8 @@
 # Figures for README
 
-Optional screenshots for the main README:
+| File | Used in |
+|------|---------|
+| `pipeline.jpg` | Workflow overview (README Overview) |
+| `html_report.jpg` | Example `cosag_report.html` screenshot (README Example output report) |
 
-- `pipeline.jpg` — workflow overview diagram
-- `html_report.jpg` — screenshot of `cosag_report.html`
-
-Until these files are added, use the [example interactive report](http://www.biostatistics.online/CoSAG/example_report.html) linked from the README.
+Online preview: [example interactive report](http://www.biostatistics.online/CoSAG/example_report.html)
