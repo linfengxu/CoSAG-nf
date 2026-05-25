@@ -17,16 +17,26 @@ jobs:
           distribution: temurin
           java-version: "17"
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
       - name: Install Nextflow
         uses: nf-core/setup-nextflow@v2
         with:
           version: "24.10.4"
 
-      - name: Validate parameter schema
-        run: nextflow schema validate nextflow_schema.json nextflow.config
+      - name: Install nf-core tools
+        run: pip install nf-core
+
+      - name: Lint parameter schema (JSON)
+        run: nf-core pipelines schema lint .
+
+      - name: Validate example params file against schema
+        run: nf-core pipelines schema validate . assets/params.example.yaml
 
       - name: Print resolved test profile config
         run: nextflow config -profile test
 
-      - name: Pipeline help
+      - name: Pipeline help (nf-schema)
         run: nextflow run . --help
