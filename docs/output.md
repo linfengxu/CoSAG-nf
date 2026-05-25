@@ -100,7 +100,7 @@ Individual SAGs are assembled with SPAdes in single-cell mode, evaluated with [C
 
 </details>
 
-Clusters are built with hierarchical clustering (linkage method and threshold controlled by `--cluster_linkage_method` and `--cluster_threshold`). Each cluster in `round1_clusters.json` lists member SAG IDs and paths to merged paired-end reads used for co-assembly.
+Clusters are built with SciPy hierarchical clustering on the Sourmash distance matrix. Linkage method (`--cluster_linkage_method`, default `complete`), cut criterion (`--cluster_criterion`, default `inconsistent`), and threshold (`--cluster_threshold`, default `0.95`) are user-defined parameters. Each cluster in `round1_clusters.json` lists member SAG IDs and paths to merged paired-end reads used for co-assembly.
 
 ### Co-assemblies
 

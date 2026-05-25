@@ -1,6 +1,6 @@
-# linfengxu/cosag-nf: Documentation
+# linfengxu/CoSAG-nf: Documentation
 
-The linfengxu/cosag-nf documentation is split into the following pages:
+The [linfengxu/CoSAG-nf](https://github.com/linfengxu/CoSAG-nf) documentation is split into the following pages:
 
 - [Usage](usage.md)
   - How to run the pipeline, samplesheet format, and where to find parameter help.

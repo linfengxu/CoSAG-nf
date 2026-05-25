@@ -2,7 +2,6 @@ process BARRNAP_COSAG {
     tag "${meta.id}"
     label 'process_low'
 
-    container "${params.sif_barrnap}"
     container "quay.io/biocontainers/barrnap:0.9--0"
     input:
     tuple val(meta), path(fasta)

@@ -1,7 +1,7 @@
 # CoSAG-nf: A Scalable Nextflow Pipeline for Co-assembly, Optimization, and Interactive Visualization of High-Throughput Single-Cell Genomes
 
-[![GitHub Actions CI Status](https://github.com/linfengxu/cosag-nf/actions/workflows/ci.yml/badge.svg)](https://github.com/linfengxu/cosag-nf/actions/workflows/ci.yml)
-[![GitHub Actions Linting Status](https://github.com/linfengxu/cosag-nf/actions/workflows/linting.yml/badge.svg)](https://github.com/linfengxu/cosag-nf/actions/workflows/linting.yml)
+[![GitHub Actions CI Status](https://github.com/linfengxu/CoSAG-nf/actions/workflows/ci.yml/badge.svg)](https://github.com/linfengxu/CoSAG-nf/actions/workflows/ci.yml)
+[![GitHub Actions Linting Status](https://github.com/linfengxu/CoSAG-nf/actions/workflows/linting.yml/badge.svg)](https://github.com/linfengxu/CoSAG-nf/actions/workflows/linting.yml)
 [![Nextflow](https://img.shields.io/badge/nextflow%20DSL2-%E2%89%A524.04.2-23aa62.svg)](https://www.nextflow.io/)
 [![Singularity](https://img.shields.io/badge/singularity-%E2%89%A53.8.0-1d355c.svg)](https://sylabs.io/docs/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
@@ -10,19 +10,15 @@
 
 ## Overview
 
-**CoSAG-nf** (`linfengxu/cosag-nf`) is a scalable [Nextflow](https://www.nextflow.io/) pipeline for processing high-throughput single-cell amplified genomes (SAGs). It performs individual assembly, MinHash similarity analysis, hierarchical clustering, iterative co-assembly, TNF-based SAG subset optimization, GTDB-Tk taxonomic classification, and generates an interactive HTML report for exploring high-quality co-assembled SAG (CoSAG) genomes.
+**CoSAG-nf** (`linfengxu/CoSAG-nf`) is a scalable [Nextflow](https://www.nextflow.io/) pipeline for processing high-throughput single-cell amplified genomes (SAGs). It performs individual assembly, MinHash similarity analysis, hierarchical clustering, iterative co-assembly, TNF-based SAG subset optimization, GTDB-Tk taxonomic classification, and generates an interactive HTML report for exploring high-quality co-assembled SAG (CoSAG) genomes.
 
-![CoSAG-nf overview](img/pipeline.jpg)
-
-> **Containers**: Pipeline software is provided via Docker images built from [`containers/`](containers/). Use `-profile docker` or convert images to Singularity/Apptainer for HPC (see [Container images](#container-images)).
+> **Containers**: Custom images on Quay.io plus Biocontainers for heavy tools — see [Container images](#container-images). Use `-profile docker` or `-profile singularity` on HPC.
 
 ### Example output report
 
 **Preview the results**: [Interactive HTML report](http://www.biostatistics.online/CoSAG/example_report.html)
 
 The example report demonstrates assembly quality metrics, clustering summaries, taxonomic classification, co-assembly optimization outcomes, and integrated dashboards.
-
-![Preview the results](img/html_report.jpg)
 
 ### Key features
 
@@ -112,16 +108,25 @@ If you have administrator access or prefer a system-wide install, follow the off
 ### Clone the repository
 
 ```bash
-git clone https://github.com/linfengxu/cosag-nf.git
-cd cosag-nf
+git clone https://github.com/linfengxu/CoSAG-nf.git
+cd CoSAG-nf
 ```
+
+Or let Nextflow download the pipeline from GitHub (cached under `~/.nextflow/assets/`):
+
+```bash
+nextflow pull linfengxu/CoSAG-nf
+# equivalent: nextflow pull https://github.com/linfengxu/CoSAG-nf
+```
+
+> GitHub treats `linfengxu/cosag-nf` and `linfengxu/CoSAG-nf` as the same repo; the canonical name on GitHub is **CoSAG-nf**.
 
 ## Quick start
 
 > **Prerequisites**
 >
 > - Nextflow, Singularity, and Java installed
-> - Container images built from [`containers/`](containers/) (see [Container images](#container-images))
+> - Container images available (pull from Quay/Biocontainers; see [Container images](#container-images))
 > - CheckM2 and GTDB-Tk databases available
 > - Preview expected output: [example report](http://www.biostatistics.online/CoSAG/example_report.html)
 
@@ -151,18 +156,17 @@ params {
     checkm2_db  = '/path/to/checkm2_database/uniref100.KO.1.dmnd'
     gtdb_database = '/path/to/gtdbtk_r220_data'
 
-    sif_barrnap = '/path/to/singularity/images/barrnap_0.9.sif'
 }
 ```
 
-Build the images in [`containers/`](containers/) first, then run with `-profile docker` or `-profile singularity` after converting images for your cluster (see below).
+Pull images (or build from [`containers/`](containers/) if needed), then run with `-profile docker` or `-profile singularity` (see [Container images](#container-images)).
 
 ### 3. Run the pipeline
 
 **Basic run (Singularity)**
 
 ```bash
-nextflow run linfengxu/cosag-nf \
+nextflow run linfengxu/CoSAG-nf \
     -profile singularity \
     --input samples.tsv \
     --outdir results \
@@ -176,24 +180,17 @@ nextflow run linfengxu/cosag-nf \
 nextflow run main.nf -profile singularity --input samples.tsv --outdir results
 ```
 
-**Multi-round co-assembly (internal rounds 2–3)**
-
-```bash
-nextflow run linfengxu/cosag-nf -profile singularity \
-    --input samples.tsv --outdir results --cosag_rounds 2
-```
-
 **Round 2 re-clustering workflow** (Round 1 + standalone Round 2 under `results/round2/`)
 
 ```bash
-nextflow run linfengxu/cosag-nf -profile singularity \
+nextflow run linfengxu/CoSAG-nf -profile singularity \
     --input samples.tsv --outdir results --round 2
 ```
 
 **Background run**
 
 ```bash
-nohup nextflow run linfengxu/cosag-nf -profile singularity \
+nohup nextflow run linfengxu/CoSAG-nf -profile singularity \
     --input samples.tsv --outdir results -resume > pipeline.log 2>&1 &
 ```
 
@@ -245,7 +242,6 @@ Detailed output documentation: [`docs/output.md`](docs/output.md).
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
-| `--cosag_rounds` | `1` | Internal co-assembly rounds (1–3) |
 | `--round` | `1` | Set to `2` to run Round 2 workflow after Round 1 |
 | `--cosag_optimize` | `true` | Enable TNF-based SAG subset optimization |
 | `--min_completeness` | `50` | Minimum completeness for CoSAG selection (%) |
@@ -267,42 +263,60 @@ Detailed output documentation: [`docs/output.md`](docs/output.md).
 --sourmash_scaled 100
 --sourmash_min_similarity 0.05
 
-// Hierarchical clustering
+// Hierarchical clustering (SciPy; see linkage guidance below)
 --cluster_linkage_method complete
+--cluster_criterion inconsistent
 --cluster_threshold 0.95
 --cluster_min_size 2
 --cluster_max_size 50
 ```
 
+#### Hierarchical clustering linkage methods
+
+After Sourmash similarity analysis, SAGs are clustered with **SciPy** hierarchical clustering (`scipy.cluster.hierarchy.linkage`). The linkage method is a **user-defined parameter** (`--cluster_linkage_method`); it does not require a separate input file beyond the computed distance matrix.
+
+| Method | Behaviour | When it may be useful |
+|--------|-----------|------------------------|
+| `complete` (default) | Cluster distance = maximum distance between any pair across clusters (complete-linkage) | Conservative grouping; keeps dissimilar genomes apart — **pipeline default** |
+| `average` | Cluster distance = mean inter-cluster pairwise distance | Moderate, less sensitive to single distant outliers than complete |
+| `single` | Cluster distance = minimum inter-cluster distance | Can merge chains of similar SAGs; may need a stricter `--cluster_threshold` |
+| `ward` | Minimizes variance increase on merge | Optional alternative; distances are derived from MinHash/Jaccard — validate results against the dendrogram |
+
+Also tune `--cluster_criterion` (default `inconsistent`) and `--cluster_threshold` (default `0.95`) together with the linkage method. Outputs for inspection: `03_clustering_analysis/results/dendrogram.png`, `cluster_validation.txt`, and `summary/final_clustering_summary.txt`.
+
+> This repository does not ship formal rules for choosing linkage on a given dataset. For publication or production runs, compare candidate settings (cluster count, cophenetic correlation in the validation report, and biological plausibility of co-assembly groups).
+
+> **Note:** TNF co-assembly optimization (`cosag_optimizer.py`) performs a separate hierarchical clustering step with `ward` linkage on tetranucleotide frequencies — independent of `--cluster_linkage_method`.
+
 ## Container images
 
-CoSAG-nf ships Dockerfiles under [`containers/`](containers/). Build the images locally (or pull from your registry after publishing).
+CoSAG-nf uses a **mixed container strategy** (image URIs are set in each `modules/local/*/main.nf`):
 
-| Image | Dockerfile | Main use |
-|-------|------------|----------|
-| `cosag-nf-python-bio` | [`containers/python-bio/Dockerfile`](containers/python-bio/Dockerfile) | Clustering, JSON updates, reporting (`bin/*.py`) |
-| `cosag-nf-spades-checkm2` | [`containers/spades-checkm2/Dockerfile`](containers/spades-checkm2/Dockerfile) | TNF co-assembly optimization |
+| Source | Image | Processes |
+|--------|-------|-----------|
+| [Quay.io `xulf2022`](https://quay.io/organization/xulf2022) | `quay.io/xulf2022/python3.8_bio:v1` | Clustering, JSON merge, filtering, HTML report (`bin/*.py`) |
+| Quay.io `xulf2022` | `quay.io/xulf2022/spades_checkm2:v1` | TNF co-assembly optimization (`COSAG_OPTIMIZATION`) |
+| [Biocontainers](https://biocontainers.pro/) | `spades`, `checkm2`, `sourmash`, `gtdbtk`, `barrnap` | Assembly, QC, MinHash, taxonomy, rRNA annotation |
 
-Additional tool images (SPAdes, CheckM2, Sourmash, GTDB-Tk, barrnap) can use [Biocontainers](https://biocontainers.pro/) with `-profile docker`, or be added under `containers/` as needed. See [`containers/README.md`](containers/README.md) for build commands and Singularity conversion.
-
-### Build (Docker)
-
-```bash
-cd containers/python-bio
-docker build -t cosag-nf-python-bio:latest .
-
-cd ../spades-checkm2
-docker build -t cosag-nf-spades-checkm2:latest .
-```
-
-### HPC: convert to Singularity / Apptainer
+Pull custom images before the first run:
 
 ```bash
-singularity build cosag-nf-python-bio.sif docker-daemon://cosag-nf-python-bio:latest
-singularity build cosag-nf-spades-checkm2.sif docker-daemon://cosag-nf-spades-checkm2:latest
+docker pull quay.io/xulf2022/python3.8_bio:v1
+docker pull quay.io/xulf2022/spades_checkm2:v1
 ```
 
-Point `container` directives in `modules/local/*/main.nf` to your image names or `.sif` paths, or centralise overrides in `conf/modules.config`.
+On HPC with Singularity/Apptainer, use `-profile singularity`; Nextflow pulls Biocontainers and can pull Docker images from Quay (see [`containers/README.md`](containers/README.md)).
+
+### Rebuild custom images (optional)
+
+Dockerfiles under [`containers/`](containers/) match the published Quay tags:
+
+| Dockerfile | Published tag |
+|------------|---------------|
+| [`containers/python-bio/Dockerfile`](containers/python-bio/Dockerfile) | `quay.io/xulf2022/python3.8_bio:v1` |
+| [`containers/spades-checkm2/Dockerfile`](containers/spades-checkm2/Dockerfile) | `quay.io/xulf2022/spades_checkm2:v1` |
+
+Override any process image in [`conf/modules.config`](conf/modules.config) without editing module files.
 
 ## Database configuration
 
@@ -344,7 +358,7 @@ sudo sysctl -p
 Reduce parallelism:
 
 ```bash
-nextflow run linfengxu/cosag-nf -profile singularity \
+nextflow run linfengxu/CoSAG-nf -profile singularity \
     --input samples.tsv --outdir results --max_cpus 8 --max_memory 64.GB
 ```
 
@@ -356,7 +370,7 @@ Rebuild images from [`containers/`](containers/) or verify `container` paths in 
 
 ```bash
 tail -f .nextflow.log
-nextflow run linfengxu/cosag-nf -profile singularity -resume -with-trace -with-report -with-timeline
+nextflow run linfengxu/CoSAG-nf -profile singularity -resume -with-trace -with-report -with-timeline
 ```
 
 ## Performance tips
@@ -381,8 +395,8 @@ nextflow run linfengxu/cosag-nf -profile singularity -resume -with-trace -with-r
 Contributions are welcome. Please see [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md).
 
 ```bash
-git clone https://github.com/linfengxu/cosag-nf.git
-cd cosag-nf
+git clone https://github.com/linfengxu/CoSAG-nf.git
+cd CoSAG-nf
 ```
 
 ## License
@@ -391,7 +405,7 @@ This project is licensed under the MIT License — see [LICENSE](LICENSE).
 
 ## Support and contact
 
-- **GitHub**: [https://github.com/linfengxu/cosag-nf](https://github.com/linfengxu/cosag-nf)
+- **GitHub**: [https://github.com/linfengxu/CoSAG-nf](https://github.com/linfengxu/CoSAG-nf)
 - **Containers**: [`containers/`](containers/)
 - **Email**: quanzx@fudan.edu.cn
 

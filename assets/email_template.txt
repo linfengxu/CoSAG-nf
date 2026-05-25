@@ -28,4 +28,4 @@ Pipeline Configuration:
 
 --
 linfengxu/cosag-nf
-https://github.com/linfengxu/cosag-nf
+https://github.com/linfengxu/CoSAG-nf

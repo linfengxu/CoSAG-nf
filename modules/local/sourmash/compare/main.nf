@@ -47,7 +47,7 @@ process SOURMASH_COMPARE_NF {
 process SOURMASH_COMPARE {
     tag "sourmash_compare"
     label 'process_high'
-    container '/mnt/data/xulf/software/sif/sourmash_4.9.2--hdfd78af_1.sif'
+    container 'quay.io/biocontainers/sourmash:4.9.2--hdfd78af_1'
 
 
     input:

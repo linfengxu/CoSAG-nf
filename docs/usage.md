@@ -38,6 +38,19 @@ Browse parameters interactively: [nf-core launch](https://nf-co.re/launch) (sele
 | `--cosag_opt_min_completeness` / `--cosag_opt_max_contamination` | When to **trigger** TNF optimization on a cluster. |
 | `--target_completeness` / `--target_contamination` | Targets used **inside** the TNF optimizer iterations. |
 
+### Hierarchical clustering linkage
+
+SAG grouping uses SciPy hierarchical clustering on the Sourmash distance matrix. Supported linkage methods (`--cluster_linkage_method`): `complete` (default), `average`, `single`, `ward`. This is a **CLI parameter only** — no extra linkage input file.
+
+| Method | Summary |
+|--------|---------|
+| `complete` | Maximizes minimum intra-cluster similarity; conservative default for co-assembly clusters |
+| `average` | Average inter-cluster distance |
+| `single` | Minimum distance; watch for chaining into oversized clusters |
+| `ward` | Variance-based merges; validate on your data if used here |
+
+Cut the tree with `--cluster_criterion` (default `inconsistent`) and `--cluster_threshold` (default `0.95`). Re-tune the threshold when changing linkage. See [`nextflow_schema.json`](../nextflow_schema.json) (`minhash_clustering_options`) for full `help_text`, and the [README linkage section](../README.md#hierarchical-clustering-linkage-methods).
+
 ## Samplesheet input
 
 Create a tab- or comma-separated samplesheet and pass it with `--input`. The file is validated against [`assets/schema_input.json`](../assets/schema_input.json).

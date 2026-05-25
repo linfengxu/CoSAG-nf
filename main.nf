@@ -1,10 +1,10 @@
 #!/usr/bin/env nextflow
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    linfengxu/cosag-nf
+    linfengxu/CoSAG-nf
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Github : https://github.com/linfengxu/cosag-nf
-    Docs   : https://cosag-nf.readthedocs.io/
+    Github : https://github.com/linfengxu/CoSAG-nf
+    Docs   : https://github.com/linfengxu/CoSAG-nf/tree/main/docs
 ----------------------------------------------------------------------------------------
 */
 

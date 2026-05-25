@@ -1,7 +1,7 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$id": "https://raw.githubusercontent.com/linfengxu/cosag-nf/master/nextflow_schema.json",
-    "title": "linfengxu/cosag-nf pipeline parameters",
+    "$id": "https://raw.githubusercontent.com/linfengxu/CoSAG-nf/main/nextflow_schema.json",
+    "title": "linfengxu/CoSAG-nf pipeline parameters",
     "description": "Single-cell amplified genome co-assembly and quality filtering pipeline",
     "type": "object",
     "$defs": {
@@ -80,6 +80,7 @@
             "type": "object",
             "fa_icon": "fas fa-project-diagram",
             "description": "Parameters for Sourmash-based MinHash clustering of SAGs.",
+            "help_text": "Sourmash builds pairwise similarity; SciPy hierarchical clustering groups SAGs for co-assembly. Linkage method and cut height are user-defined CLI parameters (no extra input file). Default: complete-linkage with inconsistent criterion at threshold 0.95.",
             "properties": {
                 "sourmash_ksize": {
                     "type": "integer",
@@ -139,14 +140,16 @@
                 "cluster_linkage_method": {
                     "type": "string",
                     "default": "complete",
-                    "description": "Linkage method for hierarchical clustering.",
+                    "description": "SciPy linkage method for hierarchical clustering (complete, average, single, or ward).",
+                    "help_text": "User-defined choice passed to scipy.cluster.hierarchy.linkage. No separate input file is required. complete (default): maximizes minimum intra-cluster similarity — conservative, tends to keep dissimilar SAGs apart. average: mean inter-cluster distance — balanced. single: minimum distance — prone to chaining into large clusters; use with care. ward: variance-minimizing merges; interpret with caution on Jaccard-derived distance matrices. The pipeline does not prescribe which method to use for a given dataset; compare dendrograms and cluster counts when tuning. TNF optimization uses a separate ward clustering step inside cosag_optimizer.py.",
                     "enum": ["complete", "average", "single", "ward"],
                     "fa_icon": "fas fa-sitemap"
                 },
                 "cluster_threshold": {
                     "type": "number",
                     "default": 0.95,
-                    "description": "Distance threshold for hierarchical clustering.",
+                    "description": "Cut height for flat clusters (meaning depends on --cluster_criterion).",
+                    "help_text": "Used with --cluster_criterion to cut the linkage tree. With default criterion inconsistent, this is the inconsistency threshold. Re-tune after changing linkage method; inspect 03_clustering_analysis/results/dendrogram.png and cluster_validation.txt.",
                     "minimum": 0,
                     "maximum": 1,
                     "fa_icon": "fas fa-sliders-h"
@@ -183,7 +186,8 @@
                 "cluster_criterion": {
                     "type": "string",
                     "default": "inconsistent",
-                    "description": "Criterion for forming flat clusters from the linkage matrix.",
+                    "description": "Criterion for forming flat clusters from the linkage matrix (fcluster).",
+                    "help_text": "inconsistent (default): cut using inconsistency values — often used with complete-linkage on similarity-derived distances. distance: cut at a fixed height on the dendrogram. maxclust: request a maximum number of clusters (threshold interpreted as integer cluster count).",
                     "enum": ["inconsistent", "distance", "maxclust"],
                     "fa_icon": "fas fa-cut"
                 },
@@ -422,12 +426,6 @@
                     "default": true,
                     "description": "Run barrnap on each extracted CoSAG FASTA used for GTDB.",
                     "fa_icon": "fas fa-toggle-on"
-                },
-                "sif_barrnap": {
-                    "type": "string",
-                    "format": "file-path",
-                    "description": "Singularity/Apptainer image for barrnap.",
-                    "fa_icon": "fas fa-box"
                 },
                 "hq_mag_final_assessment": {
                     "type": "boolean",

@@ -1,5 +1,5 @@
-# Example parameter file for linfengxu/cosag-nf
-# Usage: nextflow run linfengxu/cosag-nf -profile singularity -params-file assets/params.example.yaml
+# Example parameter file for linfengxu/CoSAG-nf
+# Usage: nextflow run linfengxu/CoSAG-nf -profile singularity -params-file assets/params.example.yaml
 
 input: '/path/to/samples.tsv'
 outdir: '/path/to/results'
@@ -22,7 +22,9 @@ spades_kmers: '21,33,55'
 spades_sc: true
 spades_careful: true
 
-# Clustering
+# Clustering (SciPy hierarchical clustering on Sourmash distances)
 sourmash_ksize: 51
+cluster_linkage_method: complete
+cluster_criterion: inconsistent
 cluster_threshold: 0.95
 cluster_min_size: 2
