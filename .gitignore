@@ -1,2 +1,15 @@
-.github/workflows/
-.github/workflows/
+# Nextflow
+.work/
+work/
+.nextflow*
+results*/
+*.log
+
+# nf-test
+.nf-test/
+
+# Editors & OS
+.DS_Store
+*~
+.idea/
+.vscode/

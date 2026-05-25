@@ -1,7 +1,7 @@
 # CoSAG-nf: A Scalable Nextflow Pipeline for Co-assembly, Optimization, and Interactive Visualization of High-Throughput Single-Cell Genomes
 
-[![GitHub Actions CI Status](https://github.com/linfengxu/CoSAG-nf/actions/workflows/ci.yml/badge.svg)](https://github.com/linfengxu/CoSAG-nf/actions/workflows/ci.yml)
-[![GitHub Actions Linting Status](https://github.com/linfengxu/CoSAG-nf/actions/workflows/linting.yml/badge.svg)](https://github.com/linfengxu/CoSAG-nf/actions/workflows/linting.yml)
+[![CI](https://img.shields.io/github/actions/workflow/status/linfengxu/CoSAG-nf/ci.yml?branch=main&label=CI&logo=github)](https://github.com/linfengxu/CoSAG-nf/actions/workflows/ci.yml)
+[![Linting](https://img.shields.io/github/actions/workflow/status/linfengxu/CoSAG-nf/linting.yml?branch=main&label=Linting&logo=github)](https://github.com/linfengxu/CoSAG-nf/actions/workflows/linting.yml)
 [![Nextflow](https://img.shields.io/badge/nextflow%20DSL2-%E2%89%A524.04.2-23aa62.svg)](https://www.nextflow.io/)
 [![Singularity](https://img.shields.io/badge/singularity-%E2%89%A53.8.0-1d355c.svg)](https://sylabs.io/docs/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)

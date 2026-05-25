@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master, dev]
+  pull_request:
+    branches: [main, master, dev]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Install Nextflow
+        uses: nf-core/setup-nextflow@v2
+        with:
+          version: "24.10.4"
+
+      - name: Validate parameter schema
+        run: nextflow schema validate nextflow_schema.json nextflow.config
+
+      - name: Print resolved test profile config
+        run: nextflow config -profile test
+
+      - name: Pipeline help
+        run: nextflow run . --help
