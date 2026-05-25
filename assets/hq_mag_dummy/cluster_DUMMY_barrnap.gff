@@ -1,0 +1,2 @@
+##gff-version 3
+# Placeholder when run_cosag_rrna_annotation is false — ignored unless cluster_id DUMMY exists.

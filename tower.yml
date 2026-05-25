@@ -1,0 +1,19 @@
+reports:
+  "**/06_final_results/report/cosag_report.html":
+    display: "CoSAG interactive HTML report"
+  "**/round2/06_final_results/report/cosag_report.html":
+    display: "CoSAG Round 2 interactive HTML report"
+  "**/06_final_results/cluster_json/cluster_data_gtdbtk.json":
+    display: "Final cluster JSON (QC, taxonomy, HQ MAG flags)"
+  "**/06_final_results/cluster_json/cluster_data_tnf.json":
+    display: "Cluster JSON with TNF optimization results"
+  "**/03_clustering_analysis/results/dendrogram.png":
+    display: "Hierarchical clustering dendrogram"
+  "**/03_clustering_analysis/summary/final_clustering_summary.txt":
+    display: "Clustering summary report"
+  "**/pipeline_info/execution_report.html":
+    display: "Nextflow execution report"
+  "**/pipeline_info/execution_timeline.html":
+    display: "Nextflow execution timeline"
+  "**/pipeline_info/pipeline_dag.html":
+    display: "Nextflow pipeline DAG"

@@ -1,0 +1,28 @@
+# Example parameter file for linfengxu/cosag-nf
+# Usage: nextflow run linfengxu/cosag-nf -profile singularity -params-file assets/params.example.yaml
+
+input: '/path/to/samples.tsv'
+outdir: '/path/to/results'
+
+# Required databases
+checkm2_db: '/path/to/checkm2_database/uniref100.KO.1.dmnd'
+gtdb_database: '/path/to/gtdbtk_r220_data'
+
+# Co-assembly rounds
+cosag_rounds: 1          # internal rounds 1–3
+round: 1                 # set to 2 to also run COSAG_ROUND2 under <outdir>/round2/
+
+# Quality thresholds
+min_completeness: 50
+max_contamination: 10
+cosag_optimize: true
+
+# SPAdes
+spades_kmers: '21,33,55'
+spades_sc: true
+spades_careful: true
+
+# Clustering
+sourmash_ksize: 51
+cluster_threshold: 0.95
+cluster_min_size: 2
