@@ -10,16 +10,16 @@ For installation, containers, and databases, see the [main README](../README.md)
 
 Full parameter documentation is maintained in [`nextflow_schema.json`](../nextflow_schema.json), grouped by topic:
 
-| Schema section | Examples |
-|----------------|----------|
-| Input/output options | `--input`, `--outdir`, `keep_intermediate` |
-| Assembly options | `--spades_kmers`, `--spades_sc`, `--spades_careful` |
-| MinHash clustering options | `--sourmash_ksize`, `--cluster_threshold`, `--cluster_min_size` |
-| Quality filtering options | `--checkm2_db`, `--cosag_rounds`, `--round`, `--cosag_optimize`, `--min_completeness` |
-| TNF optimization options | `--tnf_max_iterations`, `--tnf_min_sags` |
-| Taxonomic classification options | `--gtdb_database` |
-| Output structure options | `--out_individual_assemblies`, … `--out_logs_diagnostics` |
-| Max resource options | `--max_cpus`, `--max_memory`, `--max_time` |
+| Schema section                   | Examples                                                                              |
+| -------------------------------- | ------------------------------------------------------------------------------------- |
+| Input/output options             | `--input`, `--outdir`, `keep_intermediate`                                            |
+| Assembly options                 | `--spades_kmers`, `--spades_sc`, `--spades_careful`                                   |
+| MinHash clustering options       | `--sourmash_ksize`, `--cluster_threshold`, `--cluster_min_size`                       |
+| Quality filtering options        | `--checkm2_db`, `--cosag_rounds`, `--round`, `--cosag_optimize`, `--min_completeness` |
+| TNF optimization options         | `--tnf_max_iterations`, `--tnf_min_sags`                                              |
+| Taxonomic classification options | `--gtdb_database`                                                                     |
+| Output structure options         | `--out_individual_assemblies`, … `--out_logs_diagnostics`                             |
+| Max resource options             | `--max_cpus`, `--max_memory`, `--max_time`                                            |
 
 Defaults live in [`nextflow.config`](../nextflow.config). Copy [`assets/params.example.yaml`](../assets/params.example.yaml) as a starting point for `-params-file`.
 
@@ -30,24 +30,24 @@ Browse parameters interactively: [nf-core launch](https://nf-co.re/launch) (sele
 
 ### Commonly confused parameters
 
-| Parameter | Meaning |
-|-----------|---------|
-| `--cosag_rounds` | Number of **internal** co-assembly rounds inside the main workflow (1–3). |
-| `--round 2` | Run Round 1, then a **separate** Round 2 workflow; outputs under `<outdir>/round2/`. |
-| `--min_completeness` / `--max_contamination` | Thresholds for selecting final CoSAG contigs. |
-| `--cosag_opt_min_completeness` / `--cosag_opt_max_contamination` | When to **trigger** TNF optimization on a cluster. |
-| `--target_completeness` / `--target_contamination` | Targets used **inside** the TNF optimizer iterations. |
+| Parameter                                                        | Meaning                                                                              |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `--cosag_rounds`                                                 | Number of **internal** co-assembly rounds inside the main workflow (1–3).            |
+| `--round 2`                                                      | Run Round 1, then a **separate** Round 2 workflow; outputs under `<outdir>/round2/`. |
+| `--min_completeness` / `--max_contamination`                     | Thresholds for selecting final CoSAG contigs.                                        |
+| `--cosag_opt_min_completeness` / `--cosag_opt_max_contamination` | When to **trigger** TNF optimization on a cluster.                                   |
+| `--target_completeness` / `--target_contamination`               | Targets used **inside** the TNF optimizer iterations.                                |
 
 ### Hierarchical clustering linkage
 
 SAG grouping uses SciPy hierarchical clustering on the Sourmash distance matrix. Supported linkage methods (`--cluster_linkage_method`): `complete` (default), `average`, `single`, `ward`. This is a **CLI parameter only** — no extra linkage input file.
 
-| Method | Summary |
-|--------|---------|
+| Method     | Summary                                                                                   |
+| ---------- | ----------------------------------------------------------------------------------------- |
 | `complete` | Maximizes minimum intra-cluster similarity; conservative default for co-assembly clusters |
-| `average` | Average inter-cluster distance |
-| `single` | Minimum distance; watch for chaining into oversized clusters |
-| `ward` | Variance-based merges; validate on your data if used here |
+| `average`  | Average inter-cluster distance                                                            |
+| `single`   | Minimum distance; watch for chaining into oversized clusters                              |
+| `ward`     | Variance-based merges; validate on your data if used here                                 |
 
 Cut the tree with `--cluster_criterion` (default `inconsistent`) and `--cluster_threshold` (default `0.95`). Re-tune the threshold when changing linkage. See [`nextflow_schema.json`](../nextflow_schema.json) (`minhash_clustering_options`) for full `help_text`, and the [README linkage section](../README.md#hierarchical-clustering-linkage-methods).
 
@@ -61,11 +61,11 @@ Create a tab- or comma-separated samplesheet and pass it with `--input`. The fil
 
 ### Required columns
 
-| Column | Description |
-|--------|-------------|
-| `sampleID` | Unique SAG identifier. Use the same ID on multiple rows to merge sequencing lanes (reads are concatenated). No spaces. |
-| `forwardReads` | Absolute path to read 1 (`.fastq`, `.fq`, `.fastq.gz`, or `.fq.gz`). |
-| `reverseReads` | Absolute path to read 2 (same extensions). Required by the input schema for all rows. |
+| Column         | Description                                                                                                            |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `sampleID`     | Unique SAG identifier. Use the same ID on multiple rows to merge sequencing lanes (reads are concatenated). No spaces. |
+| `forwardReads` | Absolute path to read 1 (`.fastq`, `.fq`, `.fastq.gz`, or `.fq.gz`).                                                   |
+| `reverseReads` | Absolute path to read 2 (same extensions). Required by the input schema for all rows.                                  |
 
 Example (TSV):
 
@@ -157,12 +157,12 @@ nextflow run linfengxu/cosag-nf -r <version> ...
 
 Recommended: `singularity` or `docker` (see [containers/README.md](../containers/README.md)).
 
-| Profile | Description |
-|---------|-------------|
-| `test` | Small test dataset; minimal extra parameters |
-| `docker` | Run with Docker |
-| `singularity` | Run with Singularity / Apptainer |
-| `conda` | Conda environments (fallback only) |
+| Profile       | Description                                  |
+| ------------- | -------------------------------------------- |
+| `test`        | Small test dataset; minimal extra parameters |
+| `docker`      | Run with Docker                              |
+| `singularity` | Run with Singularity / Apptainer             |
+| `conda`       | Conda environments (fallback only)           |
 
 Multiple profiles can be combined, e.g. `-profile test,singularity` (order matters).
 

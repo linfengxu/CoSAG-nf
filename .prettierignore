@@ -1,0 +1,3 @@
+# Nextflow / nf-core notification templates (Groovy placeholders, not valid JSON)
+assets/slackreport.json
+assets/adaptivecard.json

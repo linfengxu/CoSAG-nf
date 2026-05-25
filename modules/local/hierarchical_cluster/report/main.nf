@@ -88,7 +88,7 @@ cluster_stats = []
 for cluster_id in sorted(clusters_df['Cluster_ID'].unique()):
     cluster_sags = clusters_df[clusters_df['Cluster_ID'] == cluster_id]['SAG_ID'].tolist()
     cluster_size = len(cluster_sags)
-    
+
     # Calculate internal similarity statistics
     if cluster_size > 1:
         # Get similarity values within this cluster
@@ -98,7 +98,7 @@ for cluster_id in sorted(clusters_df['Cluster_ID'].unique()):
                 if i < j and sag1 in similarity_df.index and sag2 in similarity_df.index:
                     sim = similarity_df.loc[sag1, sag2]
                     cluster_similarities.append(sim)
-        
+
         if cluster_similarities:
             mean_similarity = np.mean(cluster_similarities)
             min_similarity = np.min(cluster_similarities)
@@ -108,7 +108,7 @@ for cluster_id in sorted(clusters_df['Cluster_ID'].unique()):
             mean_similarity = min_similarity = max_similarity = std_similarity = np.nan
     else:
         mean_similarity = min_similarity = max_similarity = std_similarity = 1.0  # Singleton
-    
+
     cluster_stats.append({
         'Cluster_ID': cluster_id,
         'Size': cluster_size,
@@ -139,41 +139,41 @@ print(f"High-quality clusters identified: {len(high_quality_clusters)}")
 with open("final_clustering_summary.txt", "w") as f:
     f.write("# Final Hierarchical Clustering Summary\\n")
     f.write(f"Generated on: {time.strftime('%Y-%m-%d %H:%M:%S')}\\n\\n")
-    
+
     f.write("## Overall Statistics\\n")
     f.write(f"Total SAGs processed: {len(clusters_df)}\\n")
     f.write(f"Total clusters formed: {n_clusters}\\n")
     f.write(f"High-quality clusters: {len(high_quality_clusters)}\\n")
     f.write(f"Singleton clusters: {sum(cluster_sizes == 1)}\\n")
     f.write(f"Multi-SAG clusters: {sum(cluster_sizes > 1)}\\n\\n")
-    
+
     f.write("## Cluster Size Distribution\\n")
     size_dist = Counter(cluster_sizes)
     for size in sorted(size_dist.keys()):
         f.write(f"Size {size}: {size_dist[size]} clusters\\n")
-    
+
     f.write("\\n## Quality Metrics Summary\\n")
     if len(high_quality_clusters) > 0:
         f.write(f"Mean similarity in high-quality clusters: {high_quality_clusters['Mean_Similarity'].mean():.4f}\\n")
         f.write(f"Mean size of high-quality clusters: {high_quality_clusters['Size'].mean():.1f}\\n")
         f.write(f"Largest high-quality cluster: {high_quality_clusters['Size'].max()} SAGs\\n")
-    
+
     f.write("\\n## Top 10 Largest Clusters\\n")
     top_clusters = stats_df.head(10)
     for _, row in top_clusters.iterrows():
         f.write(f"Cluster {row['Cluster_ID']}: {row['Size']} SAGs, ")
         f.write(f"mean similarity: {row['Mean_Similarity']:.4f}\\n")
-    
+
     f.write("\\n## High-Quality Clusters (Size >= 2, Mean Sim >= 0.1)\\n")
     for _, row in high_quality_clusters.iterrows():
         f.write(f"Cluster {row['Cluster_ID']}: {row['Size']} SAGs, ")
         f.write(f"similarity: {row['Mean_Similarity']:.4f} ± {row['Std_Similarity']:.4f}\\n")
-    
+
     f.write("\\n## High-Quality Clusters (Size >= 2, No Quality Filtering)\\n")
     for _, row in high_quality_clusters.iterrows():
         f.write(f"Cluster {row['Cluster_ID']}: {row['Size']} SAGs, ")
         f.write(f"similarity: {row['Mean_Similarity']:.4f} ± {row['Std_Similarity']:.4f}\\n")
-    
+
     f.write("\\n## Recommendations\\n")
     f.write("1. Focus on high-quality clusters for downstream analysis\\n")
     f.write("2. Consider re-clustering large clusters (>20 SAGs) with stricter thresholds\\n")
@@ -183,7 +183,7 @@ with open("final_clustering_summary.txt", "w") as f:
 print("Final clustering report generated successfully!")
 
 EOF
-    
+
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         python: \$(python --version | sed 's/Python //')
@@ -191,4 +191,4 @@ EOF
         numpy: \$(python -c "import numpy; print(numpy.__version__)")
     END_VERSIONS
     """
-} 
+}

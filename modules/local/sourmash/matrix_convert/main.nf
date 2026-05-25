@@ -56,7 +56,7 @@ if not sag_names:
     # Get signature file names in the same order as sourmash compare used
     sig_files = sorted(glob.glob('*.sig'))
     print(f"Found {len(sig_files)} signature files")
-    
+
     # Extract SAG names from signature filenames
     for sig_file in sig_files:
         # Remove .sig extension and extract SAG ID
@@ -83,13 +83,13 @@ try:
     with open('raw_similarity_matrix.csv', 'w') as f:
         # Write header row (column names)
         f.write(',' + ','.join(sag_names) + '\\n')
-        
+
         # Write data rows
         for i, row_name in enumerate(sag_names):
             # Write row name followed by similarity values
             row_values = [str(similarity_matrix[i, j]) for j in range(len(sag_names))]
             f.write(row_name + ',' + ','.join(row_values) + '\\n')
-    
+
     print(f"Successfully saved labeled similarity matrix: {similarity_matrix.shape}")
     print("First few similarity values:")
     for i in range(min(3, len(sag_names))):

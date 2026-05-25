@@ -47,4 +47,4 @@ RUN pip install --no-cache-dir \
     zipp==3.20.2
 
 WORKDIR /workspace
-CMD ["python3"] 
+CMD ["python3"]

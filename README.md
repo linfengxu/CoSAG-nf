@@ -49,12 +49,12 @@ When `--round 2` is enabled, Round 1 completes first; a second MinHash clusterin
 
 ### Hardware
 
-| Resource | Minimum | Recommended |
-|----------|---------|-------------|
-| OS | Linux (Ubuntu 18.04+, CentOS 7+) | — |
-| RAM | 32 GB | 128 GB+ |
-| Storage | 500 GB | 1 TB+ |
-| CPU | 8 cores | 16+ cores |
+| Resource | Minimum                          | Recommended |
+| -------- | -------------------------------- | ----------- |
+| OS       | Linux (Ubuntu 18.04+, CentOS 7+) | —           |
+| RAM      | 32 GB                            | 128 GB+     |
+| Storage  | 500 GB                           | 1 TB+       |
+| CPU      | 8 cores                          | 16+ cores   |
 
 ### Software
 
@@ -103,10 +103,10 @@ conda activate cosag-nf
 
 If you have administrator access or prefer a system-wide install, follow the official guides:
 
-| Dependency | Documentation |
-|------------|---------------|
-| Java (≥ 11) | [OpenJDK install](https://openjdk.org/install/) |
-| Nextflow (≥ 24.04.2) | [Nextflow installation](https://www.nextflow.io/docs/latest/install.html) |
+| Dependency                        | Documentation                                                                                                                      |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Java (≥ 11)                       | [OpenJDK install](https://openjdk.org/install/)                                                                                    |
+| Nextflow (≥ 24.04.2)              | [Nextflow installation](https://www.nextflow.io/docs/latest/install.html)                                                          |
 | Singularity / Apptainer (≥ 3.8.0) | [Apptainer admin install](https://apptainer.org/docs/admin/main/installation.html) · [SingularityCE docs](https://docs.sylabs.io/) |
 
 ### Clone the repository
@@ -221,13 +221,13 @@ results/
 
 ### Key output files
 
-| File | Description |
-|------|-------------|
-| `06_final_results/cluster_json/cluster_data_gtdbtk.json` | Primary deliverable: integrated cluster metadata, QC, taxonomy, HQ MAG flags |
-| `06_final_results/cluster_json/cluster_data_tnf.json` | Cluster JSON with TNF optimization results |
-| `06_final_results/report/cosag_report.html` | Interactive HTML report (open in a browser) |
-| `03_clustering_analysis/cluster_json/round1/round1_clusters.json` | Initial cluster definitions |
-| `04_co_assemblies/cluster_json/round1/updated_clusters.json` | Post co-assembly cluster JSON |
+| File                                                              | Description                                                                  |
+| ----------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `06_final_results/cluster_json/cluster_data_gtdbtk.json`          | Primary deliverable: integrated cluster metadata, QC, taxonomy, HQ MAG flags |
+| `06_final_results/cluster_json/cluster_data_tnf.json`             | Cluster JSON with TNF optimization results                                   |
+| `06_final_results/report/cosag_report.html`                       | Interactive HTML report (open in a browser)                                  |
+| `03_clustering_analysis/cluster_json/round1/round1_clusters.json` | Initial cluster definitions                                                  |
+| `04_co_assemblies/cluster_json/round1/updated_clusters.json`      | Post co-assembly cluster JSON                                                |
 
 Detailed output documentation: [`docs/output.md`](docs/output.md).
 
@@ -235,25 +235,25 @@ Detailed output documentation: [`docs/output.md`](docs/output.md).
 
 ### Required parameters
 
-| Parameter | Description | Example |
-|-----------|-------------|---------|
-| `--input` | Samplesheet path (TSV/CSV) | `samples.tsv` |
-| `--outdir` | Output directory | `results/` |
-| `--checkm2_db` | CheckM2 database (`.dmnd`) | `/db/uniref100.KO.1.dmnd` |
-| `--gtdb_database` | GTDB-Tk data directory | `/db/gtdbtk_r220_data` |
+| Parameter         | Description                | Example                   |
+| ----------------- | -------------------------- | ------------------------- |
+| `--input`         | Samplesheet path (TSV/CSV) | `samples.tsv`             |
+| `--outdir`        | Output directory           | `results/`                |
+| `--checkm2_db`    | CheckM2 database (`.dmnd`) | `/db/uniref100.KO.1.dmnd` |
+| `--gtdb_database` | GTDB-Tk data directory     | `/db/gtdbtk_r220_data`    |
 
 ### Commonly used optional parameters
 
-| Parameter | Default | Description |
-|-----------|---------|-------------|
-| `--round` | `1` | `2` = second sourmash pass on Round 1 co-assembly contigs; outputs under `round2/` |
-| `--sourmash_ksize` | `51` | MinHash k-mer size; try `31` for SAG-level clustering (see [two-round section](#two-round-sourmash-clustering---round)) |
-| `--cosag_optimize` | `true` | Enable TNF-based SAG subset optimization |
-| `--min_completeness` | `50` | Minimum completeness for CoSAG selection (%) |
-| `--max_contamination` | `10` | Maximum contamination for CoSAG selection (%) |
-| `--max_cpus` | `20` | Maximum CPU cores |
-| `--max_memory` | `480.GB` | Maximum memory |
-| `--max_time` | `24.h` | Maximum runtime per process |
+| Parameter             | Default  | Description                                                                                                             |
+| --------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `--round`             | `1`      | `2` = second sourmash pass on Round 1 co-assembly contigs; outputs under `round2/`                                      |
+| `--sourmash_ksize`    | `51`     | MinHash k-mer size; try `31` for SAG-level clustering (see [two-round section](#two-round-sourmash-clustering---round)) |
+| `--cosag_optimize`    | `true`   | Enable TNF-based SAG subset optimization                                                                                |
+| `--min_completeness`  | `50`     | Minimum completeness for CoSAG selection (%)                                                                            |
+| `--max_contamination` | `10`     | Maximum contamination for CoSAG selection (%)                                                                           |
+| `--max_cpus`          | `20`     | Maximum CPU cores                                                                                                       |
+| `--max_memory`        | `480.GB` | Maximum memory                                                                                                          |
+| `--max_time`          | `24.h`   | Maximum runtime per process                                                                                             |
 
 ### Assembly and clustering
 
@@ -280,12 +280,12 @@ Detailed output documentation: [`docs/output.md`](docs/output.md).
 
 After Sourmash similarity analysis, SAGs are clustered with **SciPy** hierarchical clustering (`scipy.cluster.hierarchy.linkage`). The linkage method is a **user-defined parameter** (`--cluster_linkage_method`); it does not require a separate input file beyond the computed distance matrix.
 
-| Method | Behaviour | When it may be useful |
-|--------|-----------|------------------------|
-| `complete` (default) | Cluster distance = maximum distance between any pair across clusters (complete-linkage) | Conservative grouping; keeps dissimilar genomes apart — **pipeline default** |
-| `average` | Cluster distance = mean inter-cluster pairwise distance | Moderate, less sensitive to single distant outliers than complete |
-| `single` | Cluster distance = minimum inter-cluster distance | Can merge chains of similar SAGs; may need a stricter `--cluster_threshold` |
-| `ward` | Minimizes variance increase on merge | Optional alternative; distances are derived from MinHash/Jaccard — validate results against the dendrogram |
+| Method               | Behaviour                                                                               | When it may be useful                                                                                      |
+| -------------------- | --------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `complete` (default) | Cluster distance = maximum distance between any pair across clusters (complete-linkage) | Conservative grouping; keeps dissimilar genomes apart — **pipeline default**                               |
+| `average`            | Cluster distance = mean inter-cluster pairwise distance                                 | Moderate, less sensitive to single distant outliers than complete                                          |
+| `single`             | Cluster distance = minimum inter-cluster distance                                       | Can merge chains of similar SAGs; may need a stricter `--cluster_threshold`                                |
+| `ward`               | Minimizes variance increase on merge                                                    | Optional alternative; distances are derived from MinHash/Jaccard — validate results against the dendrogram |
 
 Also tune `--cluster_criterion` (default `inconsistent`) and `--cluster_threshold` (default `0.95`) together with the linkage method. Outputs for inspection: `03_clustering_analysis/results/dendrogram.png`, `cluster_validation.txt`, and `summary/final_clustering_summary.txt`.
 
@@ -297,10 +297,10 @@ Also tune `--cluster_criterion` (default `inconsistent`) and `--cluster_threshol
 
 MinHash clustering (step 2) supports an optional **two-round** sourmash strategy to improve SAG-level cluster resolution before co-assembly and TNF optimization.
 
-| Mode | Behaviour |
-|------|-----------|
-| `--round 1` (default) | Single-pass MinHash clustering on all input SAG contigs. |
-| `--round 2` | After Round 1 finishes (assembly → clustering → co-assembly → report), runs a **second** sourmash clustering pass on **Round 1 co-assembly contigs** (one representative FASTA per cluster), then repeats co-assembly, quality/taxonomy, and reporting under `<OUTDIR>/round2/`. |
+| Mode                  | Behaviour                                                                                                                                                                                                                                                                        |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--round 1` (default) | Single-pass MinHash clustering on all input SAG contigs.                                                                                                                                                                                                                         |
+| `--round 2`           | After Round 1 finishes (assembly → clustering → co-assembly → report), runs a **second** sourmash clustering pass on **Round 1 co-assembly contigs** (one representative FASTA per cluster), then repeats co-assembly, quality/taxonomy, and reporting under `<OUTDIR>/round2/`. |
 
 **Rationale:** Single-cell amplified genomes (SAGs) often have incomplete and uneven coverage, which weakens MinHash sketch overlap in a single pass. Re-sketching and re-clustering **cluster-level co-assembly contigs** can recover related groups that were split in Round 1 and yields more coherent boundaries before downstream TNF-based optimization.
 
@@ -327,11 +327,11 @@ nextflow run linfengxu/CoSAG-nf \
 
 CoSAG-nf uses a **mixed container strategy** (image URIs are set in each `modules/local/*/main.nf`):
 
-| Source | Image | Processes |
-|--------|-------|-----------|
-| [Quay.io `xulf2022`](https://quay.io/organization/xulf2022) | `quay.io/xulf2022/python3.8_bio:v1` | Clustering, JSON merge, filtering, HTML report (`bin/*.py`) |
-| Quay.io `xulf2022` | `quay.io/xulf2022/spades_checkm2:v1` | TNF co-assembly optimization (`COSAG_OPTIMIZATION`) |
-| [Biocontainers](https://biocontainers.pro/) | `spades`, `checkm2`, `sourmash`, `gtdbtk`, `barrnap` | Assembly, QC, MinHash, taxonomy, rRNA annotation |
+| Source                                                      | Image                                                | Processes                                                   |
+| ----------------------------------------------------------- | ---------------------------------------------------- | ----------------------------------------------------------- |
+| [Quay.io `xulf2022`](https://quay.io/organization/xulf2022) | `quay.io/xulf2022/python3.8_bio:v1`                  | Clustering, JSON merge, filtering, HTML report (`bin/*.py`) |
+| Quay.io `xulf2022`                                          | `quay.io/xulf2022/spades_checkm2:v1`                 | TNF co-assembly optimization (`COSAG_OPTIMIZATION`)         |
+| [Biocontainers](https://biocontainers.pro/)                 | `spades`, `checkm2`, `sourmash`, `gtdbtk`, `barrnap` | Assembly, QC, MinHash, taxonomy, rRNA annotation            |
 
 Pull custom images before the first run:
 
@@ -346,9 +346,9 @@ On HPC with Singularity/Apptainer, use `-profile singularity`; Nextflow pulls Bi
 
 Dockerfiles under [`containers/`](containers/) match the published Quay tags:
 
-| Dockerfile | Published tag |
-|------------|---------------|
-| [`containers/python-bio/Dockerfile`](containers/python-bio/Dockerfile) | `quay.io/xulf2022/python3.8_bio:v1` |
+| Dockerfile                                                                     | Published tag                        |
+| ------------------------------------------------------------------------------ | ------------------------------------ |
+| [`containers/python-bio/Dockerfile`](containers/python-bio/Dockerfile)         | `quay.io/xulf2022/python3.8_bio:v1`  |
 | [`containers/spades-checkm2/Dockerfile`](containers/spades-checkm2/Dockerfile) | `quay.io/xulf2022/spades_checkm2:v1` |
 
 Override any process image in [`conf/modules.config`](conf/modules.config) without editing module files.
@@ -416,14 +416,14 @@ nextflow run linfengxu/CoSAG-nf -profile singularity -resume -with-trace -with-r
 
 ## Documentation
 
-| Document | Description |
-|----------|-------------|
-| [`docs/README.md`](docs/README.md) | Documentation index and parameter schema guide |
-| [`docs/usage.md`](docs/usage.md) | How to run the pipeline and samplesheet format |
-| [`docs/output.md`](docs/output.md) | Output directory and file descriptions |
-| [`nextflow_schema.json`](nextflow_schema.json) | All pipeline parameters (`description` / `help_text`) |
-| [`assets/params.example.yaml`](assets/params.example.yaml) | Example `-params-file` |
-| [`CITATIONS.md`](CITATIONS.md) | Tool citations |
+| Document                                                   | Description                                           |
+| ---------------------------------------------------------- | ----------------------------------------------------- |
+| [`docs/README.md`](docs/README.md)                         | Documentation index and parameter schema guide        |
+| [`docs/usage.md`](docs/usage.md)                           | How to run the pipeline and samplesheet format        |
+| [`docs/output.md`](docs/output.md)                         | Output directory and file descriptions                |
+| [`nextflow_schema.json`](nextflow_schema.json)             | All pipeline parameters (`description` / `help_text`) |
+| [`assets/params.example.yaml`](assets/params.example.yaml) | Example `-params-file`                                |
+| [`CITATIONS.md`](CITATIONS.md)                             | Tool citations                                        |
 
 ## Contributing
 
@@ -450,7 +450,7 @@ CoSAG-nf was originally written by Linfeng Xu.
 
 This pipeline uses infrastructure from the [nf-core](https://nf-co.re) community. See [CITATIONS.md](CITATIONS.md) for tool references.
 
-> **The nf-core framework for community-curated bioinformatics pipelines.**  
+> **The nf-core framework for community-curated bioinformatics pipelines.**
 > Philip Ewels et al. _Nat Biotechnol._ 2020. doi: [10.1038/s41587-020-0439-x](https://dx.doi.org/10.1038/s41587-020-0439-x)
 
 ## Changelog

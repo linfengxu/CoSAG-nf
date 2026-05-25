@@ -28,7 +28,7 @@ process GTDBTK_CLASSIFYWF {
     """
     mkdir -p bin_fastas gtdb_results
 
-    # collect all fasta 
+    # collect all fasta
     for f in ${bin_fastas}; do
         cp \$f bin_fastas/
     done

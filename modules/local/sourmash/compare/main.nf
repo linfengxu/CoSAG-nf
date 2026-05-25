@@ -66,7 +66,7 @@ process SOURMASH_COMPARE {
     # Get all signature files
     SIG_FILES=(\$(ls *.sig))
     echo "Found \${#SIG_FILES[@]} signature files" | tee sourmash_compare.log
-    
+
     # Check if we have enough signatures
     if [ \${#SIG_FILES[@]} -lt 2 ]; then
         echo "Error: Need at least 2 valid signatures for comparison" | tee -a sourmash_compare.log
@@ -75,13 +75,13 @@ process SOURMASH_COMPARE {
         touch similarity_matrix.npy.labels.txt
         exit 0
     fi
-    
+
     # Use sourmash compare to generate binary matrix
     echo "Running sourmash compare on \${#SIG_FILES[@]} signatures..." | tee -a sourmash_compare.log
     echo "Command: sourmash compare *.sig -o similarity_matrix.npy --ksize ${ksize}" | tee -a sourmash_compare.log
-    
+
     sourmash compare *.sig -o similarity_matrix.npy --ksize ${ksize} 2>&1 | tee -a sourmash_compare.log
-    
+
     # Check if sourmash compare succeeded
     if [ ! -f "similarity_matrix.npy" ]; then
         echo "Error: sourmash compare failed to create .npy file" | tee -a sourmash_compare.log
@@ -89,16 +89,16 @@ process SOURMASH_COMPARE {
         touch similarity_matrix.npy.labels.txt
         exit 1
     fi
-    
+
     # Check if labels file was created
     if [ ! -f "similarity_matrix.npy.labels.txt" ]; then
         echo "Warning: Labels file not created by sourmash" | tee -a sourmash_compare.log
         touch similarity_matrix.npy.labels.txt
     fi
-    
+
     echo "sourmash compare completed successfully" | tee -a sourmash_compare.log
     echo "Matrix file size: \$(ls -lh similarity_matrix.npy | awk '{print \$5}')" | tee -a sourmash_compare.log
-    
+
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         sourmash: \$(sourmash --version | sed 's/sourmash //')

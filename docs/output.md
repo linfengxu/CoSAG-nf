@@ -74,7 +74,7 @@ Individual SAGs are assembled with SPAdes in single-cell mode, evaluated with [C
   - `sourmash_comparison_details.csv`: Per-comparison details from Sourmash.
   - `sourmash_compare.log`: Sourmash compare process log.
   - `failed_comparisons.txt`: Comparisons that failed (if any).
-- `02_similarity_analysis/quality_filter/` *(optional, when `--sourmash_enable_quality_filter` is true)*
+- `02_similarity_analysis/quality_filter/` _(optional, when `--sourmash_enable_quality_filter` is true)_
   - Quality-filtered sketch lists and statistics.
 
 </details>
@@ -197,26 +197,26 @@ The `cluster_data_gtdbtk.json` file is the central structured output. Each clust
 
 When the pipeline is run with `--round 2`, Round 1 completes first and Round 2 re-clusters Round 1 co-assembly contigs (excluding clusters with contamination above `--max_contamination`). Round 2 results are published under `<OUTDIR>/round2/`:
 
-| Round 1 path | Round 2 equivalent |
-|---|---|
-| `03_clustering_analysis/cluster_json/round1/` | `round2/03_clustering_analysis/cluster_json/round2/round2_clusters.json` |
-| `04_co_assemblies/cluster_json/round1/` | `round2/04_co_assemblies/cluster_json/round2/updated_clusters.json` |
-| `04_co_assemblies/coassembly/R1_*` | `round2/04_co_assemblies/coassembly/R2_*` |
-| `06_final_results/cluster_json/cluster_data_gtdbtk.json` | `round2/06_final_results/cluster_json/cluster_data_gtdbtk.json` |
-| `06_final_results/report/cosag_report.html` | `round2/06_final_results/report/cosag_report.html` |
+| Round 1 path                                             | Round 2 equivalent                                                       |
+| -------------------------------------------------------- | ------------------------------------------------------------------------ |
+| `03_clustering_analysis/cluster_json/round1/`            | `round2/03_clustering_analysis/cluster_json/round2/round2_clusters.json` |
+| `04_co_assemblies/cluster_json/round1/`                  | `round2/04_co_assemblies/cluster_json/round2/updated_clusters.json`      |
+| `04_co_assemblies/coassembly/R1_*`                       | `round2/04_co_assemblies/coassembly/R2_*`                                |
+| `06_final_results/cluster_json/cluster_data_gtdbtk.json` | `round2/06_final_results/cluster_json/cluster_data_gtdbtk.json`          |
+| `06_final_results/report/cosag_report.html`              | `round2/06_final_results/report/cosag_report.html`                       |
 
 Round 1 outputs remain in the top-level `<OUTDIR>/` directories and are not overwritten by Round 2.
 
 ## Key parameters affecting output
 
-| Parameter | Default | Effect on output |
-|---|---|---|
-| `--cosag_rounds` | `1` | Number of internal co-assembly rounds (1–3); adds `round2/` and `round3/` under `04_co_assemblies/cluster_json/` |
-| `--round` | `1` | Set to `2` to enable the standalone Round 2 workflow and `round2/` output subdirectory |
-| `--cosag_optimize` | `true` | Enables TNF optimization outputs under `tnf_optimization/` |
-| `--min_completeness` / `--max_contamination` | `50` / `10` | Thresholds for selecting CoSAG contigs in `selected_cosags/` |
-| `--hq_mag_final_assessment` | `true` | Adds HQ MAG flags to `cluster_data_gtdbtk.json` |
-| `--keep_intermediate` | `false` | Retains additional intermediate files in the work directory (not published by default) |
-| `--publish_dir_mode` | `copy` | How files are written to the output directory (`copy`, `symlink`, or `rellink`) |
+| Parameter                                    | Default     | Effect on output                                                                                                 |
+| -------------------------------------------- | ----------- | ---------------------------------------------------------------------------------------------------------------- |
+| `--cosag_rounds`                             | `1`         | Number of internal co-assembly rounds (1–3); adds `round2/` and `round3/` under `04_co_assemblies/cluster_json/` |
+| `--round`                                    | `1`         | Set to `2` to enable the standalone Round 2 workflow and `round2/` output subdirectory                           |
+| `--cosag_optimize`                           | `true`      | Enables TNF optimization outputs under `tnf_optimization/`                                                       |
+| `--min_completeness` / `--max_contamination` | `50` / `10` | Thresholds for selecting CoSAG contigs in `selected_cosags/`                                                     |
+| `--hq_mag_final_assessment`                  | `true`      | Adds HQ MAG flags to `cluster_data_gtdbtk.json`                                                                  |
+| `--keep_intermediate`                        | `false`     | Retains additional intermediate files in the work directory (not published by default)                           |
+| `--publish_dir_mode`                         | `copy`      | How files are written to the output directory (`copy`, `symlink`, or `rellink`)                                  |
 
 Output subdirectory names can be overridden individually, for example `--out_co_assemblies my_coassembly_dir`.

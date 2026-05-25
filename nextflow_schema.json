@@ -1,675 +1,682 @@
 {
-    "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$id": "https://raw.githubusercontent.com/linfengxu/CoSAG-nf/main/nextflow_schema.json",
-    "title": "linfengxu/CoSAG-nf pipeline parameters",
-    "description": "Single-cell amplified genome co-assembly and quality filtering pipeline",
-    "type": "object",
-    "$defs": {
-        "input_output_options": {
-            "title": "Input/output options",
-            "type": "object",
-            "fa_icon": "fas fa-terminal",
-            "description": "Define where the pipeline should find input data and save output data.",
-            "required": ["input", "outdir"],
-            "properties": {
-                "input": {
-                    "type": "string",
-                    "format": "file-path",
-                    "exists": true,
-                    "schema": "assets/schema_input.json",
-                    "mimetype": "text/csv",
-                    "pattern": "^\\S+\\.(csv|tsv)$",
-                    "description": "Path to comma- or tab-separated samplesheet file.",
-                    "help_text": "A CSV/TSV samplesheet with columns: sampleID, forwardReads, reverseReads.",
-                    "fa_icon": "fas fa-file-csv"
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/linfengxu/CoSAG-nf/main/nextflow_schema.json",
+  "title": "linfengxu/CoSAG-nf pipeline parameters",
+  "description": "Single-cell amplified genome co-assembly and quality filtering pipeline",
+  "type": "object",
+  "$defs": {
+    "input_output_options": {
+      "title": "Input/output options",
+      "type": "object",
+      "fa_icon": "fas fa-terminal",
+      "description": "Define where the pipeline should find input data and save output data.",
+      "required": ["input", "outdir"],
+      "properties": {
+        "input": {
+          "type": "string",
+          "format": "file-path",
+          "exists": true,
+          "schema": "assets/schema_input.json",
+          "mimetype": "text/csv",
+          "pattern": "^\\S+\\.(csv|tsv)$",
+          "description": "Path to comma- or tab-separated samplesheet file.",
+          "help_text": "A CSV/TSV samplesheet with columns: sampleID, forwardReads, reverseReads.",
+          "fa_icon": "fas fa-file-csv"
         },
-                "outdir": {
-                    "type": "string",
-                    "format": "directory-path",
-                    "description": "The output directory where the results will be saved. Use absolute paths.",
-                    "fa_icon": "fas fa-folder-open"
-                },
-                "keep_intermediate": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "Keep intermediate files after pipeline completion.",
-                    "fa_icon": "fas fa-save"
-                },
-                "email": {
-                    "type": "string",
-                    "description": "Email address for completion summary.",
-                    "fa_icon": "fas fa-envelope",
-                    "pattern": "^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$"
-                }
-            }
+        "outdir": {
+          "type": "string",
+          "format": "directory-path",
+          "description": "The output directory where the results will be saved. Use absolute paths.",
+          "fa_icon": "fas fa-folder-open"
         },
-        "assembly_options": {
-            "title": "Assembly options",
-            "type": "object",
-            "fa_icon": "fas fa-dna",
-            "description": "Parameters for SPAdes single-cell genome assembly.",
-            "properties": {
-                "spades_kmers": {
-                    "type": "string",
-                    "default": "21,33,55",
-                    "description": "Comma-separated list of k-mer sizes for SPAdes assembly.",
-                    "fa_icon": "fas fa-sliders-h"
-                },
-                "spades_sc": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "Enable SPAdes single-cell mode (--sc).",
-                    "fa_icon": "fas fa-toggle-on"
-                },
-                "spades_careful": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "Enable SPAdes careful mode to reduce mismatches and short indels.",
-                    "fa_icon": "fas fa-toggle-on"
-                },
-                "spades_additional_args": {
-                    "type": "string",
-                    "default": "--cov-cutoff 2 --phred-offset 33",
-                    "description": "Additional arguments to pass to SPAdes.",
-                    "fa_icon": "fas fa-terminal"
-                }
-            }
+        "keep_intermediate": {
+          "type": "boolean",
+          "default": false,
+          "description": "Keep intermediate files after pipeline completion.",
+          "fa_icon": "fas fa-save"
         },
-        "minhash_clustering_options": {
-            "title": "MinHash clustering options",
-            "type": "object",
-            "fa_icon": "fas fa-project-diagram",
-            "description": "Parameters for Sourmash-based MinHash clustering of SAGs.",
-            "help_text": "Sourmash builds pairwise similarity; SciPy hierarchical clustering groups SAGs for co-assembly. Linkage method and cut height are user-defined CLI parameters (no extra input file). Default: complete-linkage with inconsistent criterion at threshold 0.95.",
-            "properties": {
-                "sourmash_ksize": {
-                    "type": "integer",
-                    "default": 51,
-                    "description": "K-mer size for Sourmash MinHash sketches.",
-                    "help_text": "For SAG-level clustering, ksize=31 is often more sensitive than 51 (default); 51 was overly stringent in an oral microbiome benchmark. Distances use 1 - Jaccard similarity.",
-                    "fa_icon": "fas fa-sliders-h"
-                },
-                "sourmash_scaled": {
-                    "type": "integer",
-                    "default": 100,
-                    "description": "Scaled parameter for Sourmash sketches. Lower values give higher precision.",
-                    "fa_icon": "fas fa-sliders-h"
-                },
-                "sourmash_min_similarity": {
-                    "type": "number",
-                    "default": 0.05,
-                    "description": "Minimum Jaccard similarity threshold for SAG clustering.",
-                    "minimum": 0,
-                    "maximum": 1,
-                    "fa_icon": "fas fa-filter"
-                },
-                "sourmash_filter_small_sketches": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "Filter out SAG signatures with very small sketch sizes before similarity analysis.",
-                    "hidden": true,
-                    "fa_icon": "fas fa-filter"
-                },
-                "sourmash_enable_quality_filter": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "Enable Sourmash connectivity-based quality filtering. Disabled by default as low-completeness SAGs may have few connections.",
-                    "fa_icon": "fas fa-toggle-off"
-                },
-                "sourmash_min_sketch_size": {
-                    "type": "integer",
-                    "default": 100,
-                    "description": "Minimum number of MinHash hashes in a sketch. SAGs below this threshold are flagged as potentially unreliable.",
-                    "fa_icon": "fas fa-filter",
-                    "minimum": 1
-                },
-                "sourmash_min_connections": {
-                    "type": "integer",
-                    "default": 1,
-                    "description": "Minimum number of MinHash connections required per SAG (only used when sourmash_enable_quality_filter = true).",
-                    "minimum": 1,
-                    "hidden": true,
-                    "fa_icon": "fas fa-filter"
-                },
-                "distance_metric": {
-                    "type": "string",
-                    "default": "ani",
-                    "description": "Distance metric used by matrix construction in this pipeline.",
-                    "enum": ["ani", "jaccard"],
-                    "fa_icon": "fas fa-ruler"
-                },
-                "cluster_linkage_method": {
-                    "type": "string",
-                    "default": "complete",
-                    "description": "SciPy linkage method for hierarchical clustering (complete, average, single, or ward).",
-                    "help_text": "User-defined choice passed to scipy.cluster.hierarchy.linkage. No separate input file is required. complete (default): maximizes minimum intra-cluster similarity — conservative, tends to keep dissimilar SAGs apart. average: mean inter-cluster distance — balanced. single: minimum distance — prone to chaining into large clusters; use with care. ward: variance-minimizing merges; interpret with caution on Jaccard-derived distance matrices. The pipeline does not prescribe which method to use for a given dataset; compare dendrograms and cluster counts when tuning. TNF optimization uses a separate ward clustering step inside cosag_optimizer.py.",
-                    "enum": ["complete", "average", "single", "ward"],
-                    "fa_icon": "fas fa-sitemap"
-                },
-                "cluster_threshold": {
-                    "type": "number",
-                    "default": 0.95,
-                    "description": "Cut height for flat clusters (meaning depends on --cluster_criterion).",
-                    "help_text": "Used with --cluster_criterion to cut the linkage tree. With default criterion inconsistent, this is the inconsistency threshold. Re-tune after changing linkage method; inspect 03_clustering_analysis/results/dendrogram.png and cluster_validation.txt.",
-                    "minimum": 0,
-                    "maximum": 1,
-                    "fa_icon": "fas fa-sliders-h"
-                },
-                "cluster_min_size": {
-                    "type": "integer",
-                    "default": 2,
-                    "description": "Minimum number of SAGs required to form a co-assembly cluster.",
-                    "minimum": 2,
-                    "fa_icon": "fas fa-filter"
-                },
-                "cluster_max_size": {
-                    "type": "integer",
-                    "default": 50,
-                    "description": "Maximum cluster size; clusters exceeding this will generate a warning.",
-                    "minimum": 2,
-                    "fa_icon": "fas fa-exclamation-triangle"
-                },
-                "cluster_min_similarity_in_cluster": {
-                    "type": "number",
-                    "default": 0.2,
-                    "description": "Minimum mean internal Jaccard similarity required for a high-quality cluster.",
-                    "minimum": 0,
-                    "maximum": 1,
-                    "fa_icon": "fas fa-filter"
-                },
-                "cluster_distance_metric": {
-                    "type": "string",
-                    "default": "euclidean",
-                    "description": "Distance metric for converting Jaccard similarity to distance matrix.",
-                    "enum": ["euclidean", "cosine", "manhattan"],
-                    "fa_icon": "fas fa-ruler"
-                },
-                "cluster_criterion": {
-                    "type": "string",
-                    "default": "inconsistent",
-                    "description": "Criterion for forming flat clusters from the linkage matrix (fcluster).",
-                    "help_text": "inconsistent (default): cut using inconsistency values — often used with complete-linkage on similarity-derived distances. distance: cut at a fixed height on the dendrogram. maxclust: request a maximum number of clusters (threshold interpreted as integer cluster count).",
-                    "enum": ["inconsistent", "distance", "maxclust"],
-                    "fa_icon": "fas fa-cut"
-                },
-                "cluster_generate_dendrogram": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "Generate a dendrogram PNG visualisation of the hierarchical clustering.",
-                    "fa_icon": "fas fa-tree"
-                },
-                "cluster_compute_validation": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "Compute cophenetic correlation and other clustering validation metrics.",
-                    "fa_icon": "fas fa-chart-line"
-                }
-            }
-        },
-        "quality_filtering_options": {
-            "title": "Quality filtering options",
-            "type": "object",
-            "fa_icon": "fas fa-check-double",
-            "description": "Parameters for CheckM2-based genome quality assessment and filtering.",
-            "properties": {
-                "cosag_rounds": {
-                    "type": "integer",
-                    "default": 1,
-                    "description": "Number of CoSAG co-assembly rounds to run.",
-                    "minimum": 1,
-                    "maximum": 3,
-                    "fa_icon": "fas fa-redo"
-                },
-                "round": {
-                    "type": "integer",
-                    "default": 1,
-                    "description": "Two-round sourmash strategy: 1=cluster all SAG contigs once; 2=after Round 1, re-cluster Round 1 co-assembly contigs and write results under <outdir>/round2/.",
-                    "help_text": "Round 2 improves resolution when sparse SAG sketches miss true neighbours. Distinct from cosag_rounds (internal co-assembly iterations only).",
-                    "minimum": 1,
-                    "maximum": 2,
-                    "fa_icon": "fas fa-code-branch"
-                },
-                "round1_updated_json": {
-                    "type": ["string", "null"],
-                    "default": null,
-                    "format": "file-path",
-                    "description": "Optional round1 updated JSON path for standalone/advanced usage.",
-                    "hidden": true,
-                    "fa_icon": "fas fa-file-code"
-                },
-                "sag_bac_summary": {
-                    "type": ["string", "null"],
-                    "default": null,
-                    "format": "file-path",
-                    "description": "Optional all_sags bac120 GTDB summary input.",
-                    "hidden": true,
-                    "fa_icon": "fas fa-file-alt"
-                },
-                "sag_ar_summary": {
-                    "type": ["string", "null"],
-                    "default": null,
-                    "format": "file-path",
-                    "description": "Optional all_sags ar53 GTDB summary input.",
-                    "hidden": true,
-                    "fa_icon": "fas fa-file-alt"
-                },
-                "cosag_optimize": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "Enable TNF-based CoSAG optimization workflow.",
-                    "fa_icon": "fas fa-toggle-on"
-                },
-                "cosag_opt_min_completeness": {
-                    "type": "number",
-                    "default": 90.0,
-                    "description": "Minimum completeness (%) threshold for optimized clusters.",
-                    "minimum": 0,
-                    "maximum": 100,
-                    "fa_icon": "fas fa-percentage"
-                },
-                "cosag_opt_max_contamination": {
-                    "type": "number",
-                    "default": 10.0,
-                    "description": "Maximum contamination (%) threshold for optimized clusters.",
-                    "minimum": 0,
-                    "maximum": 100,
-                    "fa_icon": "fas fa-percentage"
-                },
-                "target_completeness": {
-                    "type": "number",
-                    "default": 90.0,
-                    "description": "TNF optimiser: target minimum completeness (%) for accepted iterations (cosag_optimizer --min-completeness).",
-                    "minimum": 0,
-                    "maximum": 100,
-                    "fa_icon": "fas fa-bullseye"
-                },
-                "target_contamination": {
-                    "type": "number",
-                    "default": 5.0,
-                    "description": "TNF optimiser: target maximum contamination (%) for accepted iterations (cosag_optimizer --target-contamination).",
-                    "minimum": 0,
-                    "maximum": 100,
-                    "fa_icon": "fas fa-bullseye"
-                },
-                "checkm2_db": {
-                    "type": "string",
-                    "format": "file-path",
-                    "description": "Path to CheckM2 diamond database (uniref100.KO.1.dmnd).",
-                    "fa_icon": "fas fa-database"
-                },
-                "checkm2_additional_args": {
-                    "type": "string",
-                    "default": "",
-                    "description": "Additional arguments to pass to CheckM2.",
-                    "fa_icon": "fas fa-terminal",
-                    "hidden": true
-                },
-                "min_completeness": {
-                    "type": "integer",
-                    "default": 50,
-                    "description": "Minimum genome completeness (%) for final CoSAG quality filtering.",
-                    "minimum": 0,
-                    "maximum": 100,
-                    "fa_icon": "fas fa-percentage"
-                },
-                "max_contamination": {
-                    "type": "integer",
-                    "default": 10,
-                    "description": "Maximum genome contamination (%) for final CoSAG quality filtering.",
-                    "minimum": 0,
-                    "maximum": 100,
-                    "fa_icon": "fas fa-percentage"
-                },
-                "coassembly_filter_max_contamination": {
-                    "type": "integer",
-                    "default": 20,
-                    "description": "Maximum contamination (%) for round-1 co-assembly cluster filtering. Lenient threshold — only removes clearly failed clusters before TNF optimisation.",
-                    "minimum": 0,
-                    "maximum": 100,
-                    "fa_icon": "fas fa-filter"
-                }
-            }
-        },
-        "tnf_optimization_options": {
-            "title": "TNF optimization options",
-            "type": "object",
-            "fa_icon": "fas fa-dna",
-            "description": "Parameters for tetranucleotide frequency (TNF)-based SAG subset selection prior to co-assembly.",
-            "help_text": "TNF optimization selects the most internally coherent SAG subset within each cluster using tetranucleotide frequency signatures and Silhouette-optimal hierarchical clustering. No assembly or quality evaluation is performed at this stage.",
-            "properties": {
-                "tnf_min_clusters": {
-                    "type": "integer",
-                    "default": 2,
-                    "description": "Minimum k for Silhouette Score search during TNF outlier detection.",
-                    "minimum": 2,
-                    "fa_icon": "fas fa-sliders-h"
-                },
-                "tnf_max_clusters": {
-                    "type": "integer",
-                    "default": 10,
-                    "description": "Maximum k for Silhouette Score search during TNF outlier detection.",
-                    "minimum": 2,
-                    "fa_icon": "fas fa-sliders-h"
-                },
-                "tnf_max_distance": {
-                    "type": "number",
-                    "default": 0.15,
-                    "description": "Stop iterating when mean pairwise TNF euclidean distance falls below this threshold.",
-                    "minimum": 0,
-                    "fa_icon": "fas fa-ruler"
-                },
-                "tnf_distance_percentile": {
-                    "type": "number",
-                    "default": 90,
-                    "description": "Only consider removing SAGs whose mean distance to others exceeds this percentile of all pairwise distances.",
-                    "minimum": 50,
-                    "maximum": 100,
-                    "fa_icon": "fas fa-percentage"
-                },
-                "tnf_max_iterations": {
-                    "type": "integer",
-                    "default": 20,
-                    "description": "Maximum number of SAG removal iterations per cluster.",
-                    "minimum": 1,
-                    "fa_icon": "fas fa-redo"
-                },
-                "tnf_min_sags": {
-                    "type": "integer",
-                    "default": 3,
-                    "description": "Minimum number of SAGs to retain per cluster after TNF optimisation.",
-                    "minimum": 2,
-                    "fa_icon": "fas fa-filter"
-                },
-                "tnf_n_candidates": {
-                    "type": "integer",
-                    "default": 3,
-                    "description": "Number of SAG removal candidates to evaluate per iteration.",
-                    "minimum": 1,
-                    "fa_icon": "fas fa-list-ol"
-                }
-            }
-        },
-        "taxonomic_classification_options": {
-            "title": "Taxonomic classification options",
-            "type": "object",
-            "fa_icon": "fas fa-sitemap",
-            "description": "Parameters for GTDB-Tk taxonomic classification.",
-            "properties": {
-                "gtdb_database": {
-                    "type": "string",
-                    "format": "directory-path",
-                    "description": "Path to GTDB-Tk database directory (release220 or later).",
-                    "fa_icon": "fas fa-database"
-                },
-                "gtdb_min_perc_aa": {
-                    "type": "integer",
-                    "default": 10,
-                    "description": "Minimum percentage of amino acids aligned to marker genes for GTDB-Tk classification.",
-                    "minimum": 0,
-                    "maximum": 100,
-                    "fa_icon": "fas fa-percentage"
-                },
-                "gtdb_skip_ani_screen": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "Skip the ANI screening step in GTDB-Tk (recommended for low-completeness SAGs).",
-                    "fa_icon": "fas fa-forward"
-                }
-            }
-        },
-        "cosag_rrna_annotation_options": {
-            "title": "CoSAG rRNA scan — barrnap (QUALITY_TAXONOMY)",
-            "type": "object",
-            "fa_icon": "fas fa-dna",
-            "description": "After EXTRACT_COSAG_CONTIGS, run barrnap (rRNA) per genome. tRNAscan-SE is not run in this pipeline version.",
-            "properties": {
-                "run_cosag_rrna_annotation": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "Run barrnap on each extracted CoSAG FASTA used for GTDB.",
-                    "fa_icon": "fas fa-toggle-on"
-                },
-                "hq_mag_final_assessment": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "After GTDB JSON merge, add per-cluster hq_mag_assessment (strict QC + barrnap 16S/23S/5S). Does not change earlier EXTRACT or GTDB steps.",
-                    "fa_icon": "fas fa-clipboard-check"
-                },
-                "hq_mag_completeness_gt": {
-                    "type": "number",
-                    "default": 90.0,
-                    "description": "HQ MAG: completeness must be strictly greater than this (percent).",
-                    "fa_icon": "fas fa-percentage"
-                },
-                "hq_mag_contamination_lt": {
-                    "type": "number",
-                    "default": 5.0,
-                    "description": "HQ MAG: contamination must be strictly less than this (percent).",
-                    "fa_icon": "fas fa-percentage"
-                }
-            }
-        },
-        "output_structure_options": {
-            "title": "Output directory structure",
-            "type": "object",
-            "fa_icon": "fas fa-folder-tree",
-            "description": "Subdirectory names for each pipeline stage output.",
-            "hidden": true,
-            "properties": {
-                "out_individual_assemblies": {
-                    "type": "string",
-                    "default": "01_individual_assemblies",
-                    "description": "Subdirectory for individual SAG assemblies.",
-                    "hidden": true,
-                    "fa_icon": "fas fa-folder"
-                },
-                "out_similarity_analysis": {
-                    "type": "string",
-                    "default": "02_similarity_analysis",
-                    "description": "Subdirectory for Sourmash similarity analysis.",
-                    "hidden": true,
-                    "fa_icon": "fas fa-folder"
-                },
-                "out_clustering_analysis": {
-                    "type": "string",
-                    "default": "03_clustering_analysis",
-                    "description": "Subdirectory for hierarchical clustering results.",
-                    "hidden": true,
-                    "fa_icon": "fas fa-folder"
-                },
-                "out_co_assemblies": {
-                    "type": "string",
-                    "default": "04_co_assemblies",
-                    "description": "Subdirectory for co-assembly results.",
-                    "hidden": true,
-                    "fa_icon": "fas fa-folder"
-                },
-                "out_taxonomic_classification": {
-                    "type": "string",
-                    "default": "05_taxonomic_classification",
-                    "description": "Subdirectory for GTDB-Tk taxonomic classification.",
-                    "hidden": true,
-                    "fa_icon": "fas fa-folder"
-                },
-                "out_final_results": {
-                    "type": "string",
-                    "default": "06_final_results",
-                    "description": "Subdirectory for final filtered CoSAG results.",
-                    "hidden": true,
-                    "fa_icon": "fas fa-folder"
-                },
-                "out_logs_diagnostics": {
-                    "type": "string",
-                    "default": "07_logs_and_diagnostics",
-                    "description": "Subdirectory for logs and diagnostic files.",
-                    "hidden": true,
-                    "fa_icon": "fas fa-folder"
-                }
-            }
-        },
-        "max_resource_options": {
-            "title": "Max resource options",
-            "type": "object",
-            "fa_icon": "fas fa-server",
-            "description": "Set the top limit for requested resources for any single job.",
-            "hidden": true,
-            "help_text": "If you are running on a smaller system, a pipeline step requesting more resources than are available may cause the Nextflow to stop the run with an error. These options allow you to cap the maximum resources requested by any single job so that the pipeline will run on your system.",
-            "properties": {
-                "max_cpus": {
-                    "type": "integer",
-                    "description": "Maximum number of CPUs that can be requested for any single job.",
-                    "default": 20,
-                    "fa_icon": "fas fa-microchip",
-                    "hidden": true,
-                    "help_text": "Use to set an upper-limit for the CPU requirement for each process."
-                },
-                "max_memory": {
-                    "type": "string",
-                    "description": "Maximum amount of memory that can be requested for any single job.",
-                    "default": "480.GB",
-                    "fa_icon": "fas fa-memory",
-                    "pattern": "^\\d+(\\.\\d+)?\\.?\\s*(K|M|G|T)?B$",
-                    "hidden": true,
-                    "help_text": "Use to set an upper-limit for the memory requirement for each process."
-                },
-                "max_time": {
-                    "type": "string",
-                    "description": "Maximum amount of time that can be requested for any single job.",
-                    "default": "24.h",
-                    "fa_icon": "fas fa-clock",
-                    "pattern": "^(\\d+\\.?\\s*(s|m|h|d|day)\\s*)+$",
-                    "hidden": true,
-                    "help_text": "Use to set an upper-limit for the time requirement for each process."
-                }
-            }
-        },
-        "institutional_config_options": {
-            "title": "Institutional config options",
-            "type": "object",
-            "fa_icon": "fas fa-university",
-            "description": "Parameters used to describe centralised config profiles. These should not be edited.",
-            "help_text": "The centralised nf-core configuration profiles use a handful of pipeline parameters to describe themselves. This information is then printed to the Nextflow log when you run a pipeline. You should not need to change these values when you run a pipeline.",
-            "properties": {
-                "custom_config_version": {
-                    "type": "string",
-                    "description": "Git commit id for Institutional configs.",
-                    "default": "master",
-                    "hidden": true,
-                    "fa_icon": "fas fa-users-cog"
-                },
-                "custom_config_base": {
-                    "type": "string",
-                    "description": "Base directory for Institutional configs.",
-                    "default": "https://raw.githubusercontent.com/nf-core/configs/master",
-                    "hidden": true,
-                    "fa_icon": "fas fa-users-cog"
-                },
-                "config_profile_name": {
-                    "type": "string",
-                    "description": "Institutional config name.",
-                    "hidden": true,
-                    "fa_icon": "fas fa-users-cog"
-                },
-                "config_profile_description": {
-                    "type": "string",
-                    "description": "Institutional config description.",
-                    "hidden": true,
-                    "fa_icon": "fas fa-users-cog"
-                },
-                "config_profile_contact": {
-                    "type": "string",
-                    "description": "Institutional config contact information.",
-                    "hidden": true,
-                    "fa_icon": "fas fa-users-cog"
-                },
-                "config_profile_url": {
-                    "type": "string",
-                    "description": "Institutional config URL link.",
-                    "hidden": true,
-                    "fa_icon": "fas fa-users-cog"
-                }
-            }
-        },
-        "generic_options": {
-            "title": "Generic options",
-            "type": "object",
-            "fa_icon": "fas fa-file-import",
-            "description": "Less common options for the pipeline, typically set in a config file.",
-            "help_text": "These options are common to all nf-core pipelines and allow you to customise some of the core preferences for how the pipeline runs.",
-            "properties": {
-                "version": {
-                    "type": "boolean",
-                    "description": "Display version and exit.",
-                    "fa_icon": "fas fa-question-circle",
-                    "hidden": true
-                },
-                "publish_dir_mode": {
-                    "type": "string",
-                    "default": "copy",
-                    "description": "Method used to save pipeline results to output directory.",
-                    "fa_icon": "fas fa-copy",
-                    "enum": ["symlink", "rellink", "link", "copy", "copyNoFollow", "move"],
-                    "hidden": true
-                },
-                "email_on_fail": {
-                    "type": "string",
-                    "description": "Email address for completion summary, only when pipeline fails.",
-                    "fa_icon": "fas fa-exclamation-triangle",
-                    "pattern": "^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$",
-                    "hidden": true
-                },
-                "plaintext_email": {
-                    "type": "boolean",
-                    "description": "Send plain-text email instead of HTML.",
-                    "fa_icon": "fas fa-remove-format",
-                    "hidden": true
-                },
-                "monochrome_logs": {
-                    "type": "boolean",
-                    "description": "Do not use coloured log outputs.",
-                    "fa_icon": "fas fa-palette",
-                    "hidden": true
-                },
-                "hook_url": {
-                    "type": "string",
-                    "description": "Incoming hook URL for messaging service.",
-                    "fa_icon": "fas fa-people-group",
-                    "hidden": true
-                },
-                "validate_params": {
-                    "type": "boolean",
-                    "description": "Boolean whether to validate parameters against the schema at runtime.",
-                    "default": true,
-                    "fa_icon": "fas fa-check-square",
-                    "hidden": true
-                },
-                "pipelines_testdata_base_path": {
-                    "type": "string",
-                    "description": "Base URL or local path to location of pipeline test dataset files.",
-                    "default": "https://raw.githubusercontent.com/nf-core/test-datasets/",
-                    "fa_icon": "far fa-check-circle",
-                    "hidden": true
-                },
-                "trace_report_suffix": {
-                    "type": "string",
-                    "description": "Suffix to add to the trace report filename.",
-                    "fa_icon": "far fa-calendar",
-                    "hidden": true
-                }
-            }
+        "email": {
+          "type": "string",
+          "description": "Email address for completion summary.",
+          "fa_icon": "fas fa-envelope",
+          "pattern": "^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$"
         }
+      }
     },
-    "allOf": [
-        { "$ref": "#/$defs/input_output_options"          },
-        { "$ref": "#/$defs/assembly_options"              },
-        { "$ref": "#/$defs/minhash_clustering_options"    },
-        { "$ref": "#/$defs/quality_filtering_options"     },
-        { "$ref": "#/$defs/tnf_optimization_options"      },
-        { "$ref": "#/$defs/taxonomic_classification_options" },
-        { "$ref": "#/$defs/cosag_rrna_annotation_options" },
-        { "$ref": "#/$defs/output_structure_options"      },
-        { "$ref": "#/$defs/max_resource_options"          },
-        { "$ref": "#/$defs/institutional_config_options"  },
-        { "$ref": "#/$defs/generic_options"               }
-    ]
+    "assembly_options": {
+      "title": "Assembly options",
+      "type": "object",
+      "fa_icon": "fas fa-dna",
+      "description": "Parameters for SPAdes single-cell genome assembly.",
+      "properties": {
+        "spades_kmers": {
+          "type": "string",
+          "default": "21,33,55",
+          "description": "Comma-separated list of k-mer sizes for SPAdes assembly.",
+          "fa_icon": "fas fa-sliders-h"
+        },
+        "spades_sc": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable SPAdes single-cell mode (--sc).",
+          "fa_icon": "fas fa-toggle-on"
+        },
+        "spades_careful": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable SPAdes careful mode to reduce mismatches and short indels.",
+          "fa_icon": "fas fa-toggle-on"
+        },
+        "spades_additional_args": {
+          "type": "string",
+          "default": "--cov-cutoff 2 --phred-offset 33",
+          "description": "Additional arguments to pass to SPAdes.",
+          "fa_icon": "fas fa-terminal"
+        }
+      }
+    },
+    "minhash_clustering_options": {
+      "title": "MinHash clustering options",
+      "type": "object",
+      "fa_icon": "fas fa-project-diagram",
+      "description": "Parameters for Sourmash-based MinHash clustering of SAGs.",
+      "help_text": "Sourmash builds pairwise similarity; SciPy hierarchical clustering groups SAGs for co-assembly. Linkage method and cut height are user-defined CLI parameters (no extra input file). Default: complete-linkage with inconsistent criterion at threshold 0.95.",
+      "properties": {
+        "sourmash_ksize": {
+          "type": "integer",
+          "default": 51,
+          "description": "K-mer size for Sourmash MinHash sketches.",
+          "help_text": "For SAG-level clustering, ksize=31 is often more sensitive than 51 (default); 51 was overly stringent in an oral microbiome benchmark. Distances use 1 - Jaccard similarity.",
+          "fa_icon": "fas fa-sliders-h"
+        },
+        "sourmash_scaled": {
+          "type": "integer",
+          "default": 100,
+          "description": "Scaled parameter for Sourmash sketches. Lower values give higher precision.",
+          "fa_icon": "fas fa-sliders-h"
+        },
+        "sourmash_min_similarity": {
+          "type": "number",
+          "default": 0.05,
+          "description": "Minimum Jaccard similarity threshold for SAG clustering.",
+          "minimum": 0,
+          "maximum": 1,
+          "fa_icon": "fas fa-filter"
+        },
+        "sourmash_filter_small_sketches": {
+          "type": "boolean",
+          "default": false,
+          "description": "Filter out SAG signatures with very small sketch sizes before similarity analysis.",
+          "hidden": true,
+          "fa_icon": "fas fa-filter"
+        },
+        "sourmash_enable_quality_filter": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable Sourmash connectivity-based quality filtering. Disabled by default as low-completeness SAGs may have few connections.",
+          "fa_icon": "fas fa-toggle-off"
+        },
+        "sourmash_min_sketch_size": {
+          "type": "integer",
+          "default": 100,
+          "description": "Minimum number of MinHash hashes in a sketch. SAGs below this threshold are flagged as potentially unreliable.",
+          "fa_icon": "fas fa-filter",
+          "minimum": 1
+        },
+        "sourmash_min_connections": {
+          "type": "integer",
+          "default": 1,
+          "description": "Minimum number of MinHash connections required per SAG (only used when sourmash_enable_quality_filter = true).",
+          "minimum": 1,
+          "hidden": true,
+          "fa_icon": "fas fa-filter"
+        },
+        "distance_metric": {
+          "type": "string",
+          "default": "ani",
+          "description": "Distance metric used by matrix construction in this pipeline.",
+          "enum": ["ani", "jaccard"],
+          "fa_icon": "fas fa-ruler"
+        },
+        "cluster_linkage_method": {
+          "type": "string",
+          "default": "complete",
+          "description": "SciPy linkage method for hierarchical clustering (complete, average, single, or ward).",
+          "help_text": "User-defined choice passed to scipy.cluster.hierarchy.linkage. No separate input file is required. complete (default): maximizes minimum intra-cluster similarity — conservative, tends to keep dissimilar SAGs apart. average: mean inter-cluster distance — balanced. single: minimum distance — prone to chaining into large clusters; use with care. ward: variance-minimizing merges; interpret with caution on Jaccard-derived distance matrices. The pipeline does not prescribe which method to use for a given dataset; compare dendrograms and cluster counts when tuning. TNF optimization uses a separate ward clustering step inside cosag_optimizer.py.",
+          "enum": ["complete", "average", "single", "ward"],
+          "fa_icon": "fas fa-sitemap"
+        },
+        "cluster_threshold": {
+          "type": "number",
+          "default": 0.95,
+          "description": "Cut height for flat clusters (meaning depends on --cluster_criterion).",
+          "help_text": "Used with --cluster_criterion to cut the linkage tree. With default criterion inconsistent, this is the inconsistency threshold. Re-tune after changing linkage method; inspect 03_clustering_analysis/results/dendrogram.png and cluster_validation.txt.",
+          "minimum": 0,
+          "maximum": 1,
+          "fa_icon": "fas fa-sliders-h"
+        },
+        "cluster_min_size": {
+          "type": "integer",
+          "default": 2,
+          "description": "Minimum number of SAGs required to form a co-assembly cluster.",
+          "minimum": 2,
+          "fa_icon": "fas fa-filter"
+        },
+        "cluster_max_size": {
+          "type": "integer",
+          "default": 50,
+          "description": "Maximum cluster size; clusters exceeding this will generate a warning.",
+          "minimum": 2,
+          "fa_icon": "fas fa-exclamation-triangle"
+        },
+        "cluster_min_similarity_in_cluster": {
+          "type": "number",
+          "default": 0.2,
+          "description": "Minimum mean internal Jaccard similarity required for a high-quality cluster.",
+          "minimum": 0,
+          "maximum": 1,
+          "fa_icon": "fas fa-filter"
+        },
+        "cluster_distance_metric": {
+          "type": "string",
+          "default": "euclidean",
+          "description": "Distance metric for converting Jaccard similarity to distance matrix.",
+          "enum": ["euclidean", "cosine", "manhattan"],
+          "fa_icon": "fas fa-ruler"
+        },
+        "cluster_criterion": {
+          "type": "string",
+          "default": "inconsistent",
+          "description": "Criterion for forming flat clusters from the linkage matrix (fcluster).",
+          "help_text": "inconsistent (default): cut using inconsistency values — often used with complete-linkage on similarity-derived distances. distance: cut at a fixed height on the dendrogram. maxclust: request a maximum number of clusters (threshold interpreted as integer cluster count).",
+          "enum": ["inconsistent", "distance", "maxclust"],
+          "fa_icon": "fas fa-cut"
+        },
+        "cluster_generate_dendrogram": {
+          "type": "boolean",
+          "default": true,
+          "description": "Generate a dendrogram PNG visualisation of the hierarchical clustering.",
+          "fa_icon": "fas fa-tree"
+        },
+        "cluster_compute_validation": {
+          "type": "boolean",
+          "default": true,
+          "description": "Compute cophenetic correlation and other clustering validation metrics.",
+          "fa_icon": "fas fa-chart-line"
+        }
+      }
+    },
+    "quality_filtering_options": {
+      "title": "Quality filtering options",
+      "type": "object",
+      "fa_icon": "fas fa-check-double",
+      "description": "Parameters for CheckM2-based genome quality assessment and filtering.",
+      "properties": {
+        "cosag_rounds": {
+          "type": "integer",
+          "default": 1,
+          "description": "Number of CoSAG co-assembly rounds to run.",
+          "minimum": 1,
+          "maximum": 3,
+          "fa_icon": "fas fa-redo"
+        },
+        "round": {
+          "type": "integer",
+          "default": 1,
+          "description": "Two-round sourmash strategy: 1=cluster all SAG contigs once; 2=after Round 1, re-cluster Round 1 co-assembly contigs and write results under <outdir>/round2/.",
+          "help_text": "Round 2 improves resolution when sparse SAG sketches miss true neighbours. Distinct from cosag_rounds (internal co-assembly iterations only).",
+          "minimum": 1,
+          "maximum": 2,
+          "fa_icon": "fas fa-code-branch"
+        },
+        "round1_updated_json": {
+          "type": ["string", "null"],
+          "default": null,
+          "format": "file-path",
+          "description": "Optional round1 updated JSON path for standalone/advanced usage.",
+          "hidden": true,
+          "fa_icon": "fas fa-file-code"
+        },
+        "sag_bac_summary": {
+          "type": ["string", "null"],
+          "default": null,
+          "format": "file-path",
+          "description": "Optional all_sags bac120 GTDB summary input.",
+          "hidden": true,
+          "fa_icon": "fas fa-file-alt"
+        },
+        "sag_ar_summary": {
+          "type": ["string", "null"],
+          "default": null,
+          "format": "file-path",
+          "description": "Optional all_sags ar53 GTDB summary input.",
+          "hidden": true,
+          "fa_icon": "fas fa-file-alt"
+        },
+        "cosag_optimize": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable TNF-based CoSAG optimization workflow.",
+          "fa_icon": "fas fa-toggle-on"
+        },
+        "cosag_opt_min_completeness": {
+          "type": "number",
+          "default": 90.0,
+          "description": "Minimum completeness (%) threshold for optimized clusters.",
+          "minimum": 0,
+          "maximum": 100,
+          "fa_icon": "fas fa-percentage"
+        },
+        "cosag_opt_max_contamination": {
+          "type": "number",
+          "default": 10.0,
+          "description": "Maximum contamination (%) threshold for optimized clusters.",
+          "minimum": 0,
+          "maximum": 100,
+          "fa_icon": "fas fa-percentage"
+        },
+        "target_completeness": {
+          "type": "number",
+          "default": 90.0,
+          "description": "TNF optimiser: target minimum completeness (%) for accepted iterations (cosag_optimizer --min-completeness).",
+          "minimum": 0,
+          "maximum": 100,
+          "fa_icon": "fas fa-bullseye"
+        },
+        "target_contamination": {
+          "type": "number",
+          "default": 5.0,
+          "description": "TNF optimiser: target maximum contamination (%) for accepted iterations (cosag_optimizer --target-contamination).",
+          "minimum": 0,
+          "maximum": 100,
+          "fa_icon": "fas fa-bullseye"
+        },
+        "checkm2_db": {
+          "type": "string",
+          "format": "file-path",
+          "description": "Path to CheckM2 diamond database (uniref100.KO.1.dmnd).",
+          "fa_icon": "fas fa-database"
+        },
+        "checkm2_additional_args": {
+          "type": "string",
+          "default": "",
+          "description": "Additional arguments to pass to CheckM2.",
+          "fa_icon": "fas fa-terminal",
+          "hidden": true
+        },
+        "min_completeness": {
+          "type": "integer",
+          "default": 50,
+          "description": "Minimum genome completeness (%) for final CoSAG quality filtering.",
+          "minimum": 0,
+          "maximum": 100,
+          "fa_icon": "fas fa-percentage"
+        },
+        "max_contamination": {
+          "type": "integer",
+          "default": 10,
+          "description": "Maximum genome contamination (%) for final CoSAG quality filtering.",
+          "minimum": 0,
+          "maximum": 100,
+          "fa_icon": "fas fa-percentage"
+        },
+        "coassembly_filter_max_contamination": {
+          "type": "integer",
+          "default": 20,
+          "description": "Maximum contamination (%) for round-1 co-assembly cluster filtering. Lenient threshold — only removes clearly failed clusters before TNF optimisation.",
+          "minimum": 0,
+          "maximum": 100,
+          "fa_icon": "fas fa-filter"
+        }
+      }
+    },
+    "tnf_optimization_options": {
+      "title": "TNF optimization options",
+      "type": "object",
+      "fa_icon": "fas fa-dna",
+      "description": "Parameters for tetranucleotide frequency (TNF)-based SAG subset selection prior to co-assembly.",
+      "help_text": "TNF optimization selects the most internally coherent SAG subset within each cluster using tetranucleotide frequency signatures and Silhouette-optimal hierarchical clustering. No assembly or quality evaluation is performed at this stage.",
+      "properties": {
+        "tnf_min_clusters": {
+          "type": "integer",
+          "default": 2,
+          "description": "Minimum k for Silhouette Score search during TNF outlier detection.",
+          "minimum": 2,
+          "fa_icon": "fas fa-sliders-h"
+        },
+        "tnf_max_clusters": {
+          "type": "integer",
+          "default": 10,
+          "description": "Maximum k for Silhouette Score search during TNF outlier detection.",
+          "minimum": 2,
+          "fa_icon": "fas fa-sliders-h"
+        },
+        "tnf_max_distance": {
+          "type": "number",
+          "default": 0.15,
+          "description": "Stop iterating when mean pairwise TNF euclidean distance falls below this threshold.",
+          "minimum": 0,
+          "fa_icon": "fas fa-ruler"
+        },
+        "tnf_distance_percentile": {
+          "type": "number",
+          "default": 90,
+          "description": "Only consider removing SAGs whose mean distance to others exceeds this percentile of all pairwise distances.",
+          "minimum": 50,
+          "maximum": 100,
+          "fa_icon": "fas fa-percentage"
+        },
+        "tnf_max_iterations": {
+          "type": "integer",
+          "default": 20,
+          "description": "Maximum number of SAG removal iterations per cluster.",
+          "minimum": 1,
+          "fa_icon": "fas fa-redo"
+        },
+        "tnf_min_sags": {
+          "type": "integer",
+          "default": 3,
+          "description": "Minimum number of SAGs to retain per cluster after TNF optimisation.",
+          "minimum": 2,
+          "fa_icon": "fas fa-filter"
+        },
+        "tnf_n_candidates": {
+          "type": "integer",
+          "default": 3,
+          "description": "Number of SAG removal candidates to evaluate per iteration.",
+          "minimum": 1,
+          "fa_icon": "fas fa-list-ol"
+        }
+      }
+    },
+    "taxonomic_classification_options": {
+      "title": "Taxonomic classification options",
+      "type": "object",
+      "fa_icon": "fas fa-sitemap",
+      "description": "Parameters for GTDB-Tk taxonomic classification.",
+      "properties": {
+        "gtdb_database": {
+          "type": "string",
+          "format": "directory-path",
+          "description": "Path to GTDB-Tk database directory (release220 or later).",
+          "fa_icon": "fas fa-database"
+        },
+        "gtdb_min_perc_aa": {
+          "type": "integer",
+          "default": 10,
+          "description": "Minimum percentage of amino acids aligned to marker genes for GTDB-Tk classification.",
+          "minimum": 0,
+          "maximum": 100,
+          "fa_icon": "fas fa-percentage"
+        },
+        "gtdb_skip_ani_screen": {
+          "type": "boolean",
+          "default": true,
+          "description": "Skip the ANI screening step in GTDB-Tk (recommended for low-completeness SAGs).",
+          "fa_icon": "fas fa-forward"
+        }
+      }
+    },
+    "cosag_rrna_annotation_options": {
+      "title": "CoSAG rRNA scan — barrnap (QUALITY_TAXONOMY)",
+      "type": "object",
+      "fa_icon": "fas fa-dna",
+      "description": "After EXTRACT_COSAG_CONTIGS, run barrnap (rRNA) per genome. tRNAscan-SE is not run in this pipeline version.",
+      "properties": {
+        "run_cosag_rrna_annotation": {
+          "type": "boolean",
+          "default": true,
+          "description": "Run barrnap on each extracted CoSAG FASTA used for GTDB.",
+          "fa_icon": "fas fa-toggle-on"
+        },
+        "hq_mag_final_assessment": {
+          "type": "boolean",
+          "default": true,
+          "description": "After GTDB JSON merge, add per-cluster hq_mag_assessment (strict QC + barrnap 16S/23S/5S). Does not change earlier EXTRACT or GTDB steps.",
+          "fa_icon": "fas fa-clipboard-check"
+        },
+        "hq_mag_completeness_gt": {
+          "type": "number",
+          "default": 90.0,
+          "description": "HQ MAG: completeness must be strictly greater than this (percent).",
+          "fa_icon": "fas fa-percentage"
+        },
+        "hq_mag_contamination_lt": {
+          "type": "number",
+          "default": 5.0,
+          "description": "HQ MAG: contamination must be strictly less than this (percent).",
+          "fa_icon": "fas fa-percentage"
+        }
+      }
+    },
+    "output_structure_options": {
+      "title": "Output directory structure",
+      "type": "object",
+      "fa_icon": "fas fa-folder-tree",
+      "description": "Subdirectory names for each pipeline stage output.",
+      "hidden": true,
+      "properties": {
+        "out_individual_assemblies": {
+          "type": "string",
+          "default": "01_individual_assemblies",
+          "description": "Subdirectory for individual SAG assemblies.",
+          "hidden": true,
+          "fa_icon": "fas fa-folder"
+        },
+        "out_similarity_analysis": {
+          "type": "string",
+          "default": "02_similarity_analysis",
+          "description": "Subdirectory for Sourmash similarity analysis.",
+          "hidden": true,
+          "fa_icon": "fas fa-folder"
+        },
+        "out_clustering_analysis": {
+          "type": "string",
+          "default": "03_clustering_analysis",
+          "description": "Subdirectory for hierarchical clustering results.",
+          "hidden": true,
+          "fa_icon": "fas fa-folder"
+        },
+        "out_co_assemblies": {
+          "type": "string",
+          "default": "04_co_assemblies",
+          "description": "Subdirectory for co-assembly results.",
+          "hidden": true,
+          "fa_icon": "fas fa-folder"
+        },
+        "out_taxonomic_classification": {
+          "type": "string",
+          "default": "05_taxonomic_classification",
+          "description": "Subdirectory for GTDB-Tk taxonomic classification.",
+          "hidden": true,
+          "fa_icon": "fas fa-folder"
+        },
+        "out_final_results": {
+          "type": "string",
+          "default": "06_final_results",
+          "description": "Subdirectory for final filtered CoSAG results.",
+          "hidden": true,
+          "fa_icon": "fas fa-folder"
+        },
+        "out_logs_diagnostics": {
+          "type": "string",
+          "default": "07_logs_and_diagnostics",
+          "description": "Subdirectory for logs and diagnostic files.",
+          "hidden": true,
+          "fa_icon": "fas fa-folder"
+        }
+      }
+    },
+    "max_resource_options": {
+      "title": "Max resource options",
+      "type": "object",
+      "fa_icon": "fas fa-server",
+      "description": "Set the top limit for requested resources for any single job.",
+      "hidden": true,
+      "help_text": "If you are running on a smaller system, a pipeline step requesting more resources than are available may cause the Nextflow to stop the run with an error. These options allow you to cap the maximum resources requested by any single job so that the pipeline will run on your system.",
+      "properties": {
+        "max_cpus": {
+          "type": "integer",
+          "description": "Maximum number of CPUs that can be requested for any single job.",
+          "default": 20,
+          "fa_icon": "fas fa-microchip",
+          "hidden": true,
+          "help_text": "Use to set an upper-limit for the CPU requirement for each process."
+        },
+        "max_memory": {
+          "type": "string",
+          "description": "Maximum amount of memory that can be requested for any single job.",
+          "default": "480.GB",
+          "fa_icon": "fas fa-memory",
+          "pattern": "^\\d+(\\.\\d+)?\\.?\\s*(K|M|G|T)?B$",
+          "hidden": true,
+          "help_text": "Use to set an upper-limit for the memory requirement for each process."
+        },
+        "max_time": {
+          "type": "string",
+          "description": "Maximum amount of time that can be requested for any single job.",
+          "default": "24.h",
+          "fa_icon": "fas fa-clock",
+          "pattern": "^(\\d+\\.?\\s*(s|m|h|d|day)\\s*)+$",
+          "hidden": true,
+          "help_text": "Use to set an upper-limit for the time requirement for each process."
+        }
+      }
+    },
+    "institutional_config_options": {
+      "title": "Institutional config options",
+      "type": "object",
+      "fa_icon": "fas fa-university",
+      "description": "Parameters used to describe centralised config profiles. These should not be edited.",
+      "help_text": "The centralised nf-core configuration profiles use a handful of pipeline parameters to describe themselves. This information is then printed to the Nextflow log when you run a pipeline. You should not need to change these values when you run a pipeline.",
+      "properties": {
+        "custom_config_version": {
+          "type": "string",
+          "description": "Git commit id for Institutional configs.",
+          "default": "master",
+          "hidden": true,
+          "fa_icon": "fas fa-users-cog"
+        },
+        "custom_config_base": {
+          "type": "string",
+          "description": "Base directory for Institutional configs.",
+          "default": "https://raw.githubusercontent.com/nf-core/configs/master",
+          "hidden": true,
+          "fa_icon": "fas fa-users-cog"
+        },
+        "config_profile_name": {
+          "type": "string",
+          "description": "Institutional config name.",
+          "hidden": true,
+          "fa_icon": "fas fa-users-cog"
+        },
+        "config_profile_description": {
+          "type": "string",
+          "description": "Institutional config description.",
+          "hidden": true,
+          "fa_icon": "fas fa-users-cog"
+        },
+        "config_profile_contact": {
+          "type": "string",
+          "description": "Institutional config contact information.",
+          "hidden": true,
+          "fa_icon": "fas fa-users-cog"
+        },
+        "config_profile_url": {
+          "type": "string",
+          "description": "Institutional config URL link.",
+          "hidden": true,
+          "fa_icon": "fas fa-users-cog"
+        }
+      }
+    },
+    "generic_options": {
+      "title": "Generic options",
+      "type": "object",
+      "fa_icon": "fas fa-file-import",
+      "description": "Less common options for the pipeline, typically set in a config file.",
+      "help_text": "These options are common to all nf-core pipelines and allow you to customise some of the core preferences for how the pipeline runs.",
+      "properties": {
+        "version": {
+          "type": "boolean",
+          "description": "Display version and exit.",
+          "fa_icon": "fas fa-question-circle",
+          "hidden": true
+        },
+        "publish_dir_mode": {
+          "type": "string",
+          "default": "copy",
+          "description": "Method used to save pipeline results to output directory.",
+          "fa_icon": "fas fa-copy",
+          "enum": [
+            "symlink",
+            "rellink",
+            "link",
+            "copy",
+            "copyNoFollow",
+            "move"
+          ],
+          "hidden": true
+        },
+        "email_on_fail": {
+          "type": "string",
+          "description": "Email address for completion summary, only when pipeline fails.",
+          "fa_icon": "fas fa-exclamation-triangle",
+          "pattern": "^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$",
+          "hidden": true
+        },
+        "plaintext_email": {
+          "type": "boolean",
+          "description": "Send plain-text email instead of HTML.",
+          "fa_icon": "fas fa-remove-format",
+          "hidden": true
+        },
+        "monochrome_logs": {
+          "type": "boolean",
+          "description": "Do not use coloured log outputs.",
+          "fa_icon": "fas fa-palette",
+          "hidden": true
+        },
+        "hook_url": {
+          "type": "string",
+          "description": "Incoming hook URL for messaging service.",
+          "fa_icon": "fas fa-people-group",
+          "hidden": true
+        },
+        "validate_params": {
+          "type": "boolean",
+          "description": "Boolean whether to validate parameters against the schema at runtime.",
+          "default": true,
+          "fa_icon": "fas fa-check-square",
+          "hidden": true
+        },
+        "pipelines_testdata_base_path": {
+          "type": "string",
+          "description": "Base URL or local path to location of pipeline test dataset files.",
+          "default": "https://raw.githubusercontent.com/nf-core/test-datasets/",
+          "fa_icon": "far fa-check-circle",
+          "hidden": true
+        },
+        "trace_report_suffix": {
+          "type": "string",
+          "description": "Suffix to add to the trace report filename.",
+          "fa_icon": "far fa-calendar",
+          "hidden": true
+        }
+      }
+    }
+  },
+  "allOf": [
+    { "$ref": "#/$defs/input_output_options" },
+    { "$ref": "#/$defs/assembly_options" },
+    { "$ref": "#/$defs/minhash_clustering_options" },
+    { "$ref": "#/$defs/quality_filtering_options" },
+    { "$ref": "#/$defs/tnf_optimization_options" },
+    { "$ref": "#/$defs/taxonomic_classification_options" },
+    { "$ref": "#/$defs/cosag_rrna_annotation_options" },
+    { "$ref": "#/$defs/output_structure_options" },
+    { "$ref": "#/$defs/max_resource_options" },
+    { "$ref": "#/$defs/institutional_config_options" },
+    { "$ref": "#/$defs/generic_options" }
+  ]
 }

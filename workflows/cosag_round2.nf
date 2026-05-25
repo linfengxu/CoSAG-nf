@@ -82,4 +82,3 @@ workflow COSAG_ROUND2 {
     bac_summary         = QUALITY_TAXONOMY.out.bac_summary
     ar_summary          = QUALITY_TAXONOMY.out.ar_summary
 }
-

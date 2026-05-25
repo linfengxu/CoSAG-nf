@@ -1,16 +1,16 @@
 # Example parameter file for linfengxu/CoSAG-nf
 # Usage: nextflow run linfengxu/CoSAG-nf -profile singularity -params-file assets/params.example.yaml
 
-input: '/path/to/samples.tsv'
-outdir: '/path/to/results'
+input: "/path/to/samples.tsv"
+outdir: "/path/to/results"
 
 # Required databases
-checkm2_db: '/path/to/checkm2_database/uniref100.KO.1.dmnd'
-gtdb_database: '/path/to/gtdbtk_r220_data'
+checkm2_db: "/path/to/checkm2_database/uniref100.KO.1.dmnd"
+gtdb_database: "/path/to/gtdbtk_r220_data"
 
 # Co-assembly rounds
-cosag_rounds: 1          # internal rounds 1–3
-round: 1                 # 2 = second sourmash pass on R1 co-assembly contigs → <outdir>/round2/
+cosag_rounds: 1 # internal rounds 1–3
+round: 1 # 2 = second sourmash pass on R1 co-assembly contigs → <outdir>/round2/
 # sourmash_ksize: 31     # optional: often better for SAG-level clustering than default 51
 
 # Quality thresholds
@@ -19,7 +19,7 @@ max_contamination: 10
 cosag_optimize: true
 
 # SPAdes
-spades_kmers: '21,33,55'
+spades_kmers: "21,33,55"
 spades_sc: true
 spades_careful: true
 

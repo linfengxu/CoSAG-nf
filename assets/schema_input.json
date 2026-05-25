@@ -1,33 +1,33 @@
 {
-    "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$id": "https://raw.githubusercontent.com/linfengxu/CoSAG-nf/main/assets/schema_input.json",
-    "title": "linfengxu/cosag-nf pipeline - params.input schema",
-    "description": "Schema for the file provided with params.input",
-    "type": "array",
-    "items": {
-        "type": "object",
-        "properties": {
-            "sampleID": {
-                "type": "string",
-                "pattern": "^\\S+$",
-                "errorMessage": "Sample name must be provided and cannot contain spaces",
-                "meta": ["id"]
-            },
-            "forwardReads": {
-                "type": "string",
-                "format": "file-path",
-                "exists": true,
-                "pattern": "^\\S+\\.f(ast)?q(\\.gz)?$",
-                "errorMessage": "FastQ file for forwardReads must be provided, cannot contain spaces and must have extension '.fq', '.fastq', '.fq.gz' or '.fastq.gz'"
-            },
-            "reverseReads": {
-                "type": "string",
-                "format": "file-path",
-                "exists": true,
-                "pattern": "^\\S+\\.f(ast)?q(\\.gz)?$",
-                "errorMessage": "FastQ file for reverseReads must be provided, cannot contain spaces and must have extension '.fq', '.fastq', '.fq.gz' or '.fastq.gz'"
-            }
-        },
-        "required": ["sampleID", "forwardReads", "reverseReads"]
-    }
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/linfengxu/CoSAG-nf/main/assets/schema_input.json",
+  "title": "linfengxu/cosag-nf pipeline - params.input schema",
+  "description": "Schema for the file provided with params.input",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "sampleID": {
+        "type": "string",
+        "pattern": "^\\S+$",
+        "errorMessage": "Sample name must be provided and cannot contain spaces",
+        "meta": ["id"]
+      },
+      "forwardReads": {
+        "type": "string",
+        "format": "file-path",
+        "exists": true,
+        "pattern": "^\\S+\\.f(ast)?q(\\.gz)?$",
+        "errorMessage": "FastQ file for forwardReads must be provided, cannot contain spaces and must have extension '.fq', '.fastq', '.fq.gz' or '.fastq.gz'"
+      },
+      "reverseReads": {
+        "type": "string",
+        "format": "file-path",
+        "exists": true,
+        "pattern": "^\\S+\\.f(ast)?q(\\.gz)?$",
+        "errorMessage": "FastQ file for reverseReads must be provided, cannot contain spaces and must have extension '.fq', '.fastq', '.fq.gz' or '.fastq.gz'"
+      }
+    },
+    "required": ["sampleID", "forwardReads", "reverseReads"]
+  }
 }
