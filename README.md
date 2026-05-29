@@ -39,7 +39,7 @@ The example report demonstrates assembly quality metrics, clustering summaries, 
 
 1. **SAG assembly** — SPAdes → CheckM2 → filter → GTDB-Tk (individual SAGs)
 2. **MinHash clustering** — Sourmash sketch/compare → hierarchical clustering → `round1_clusters.json`
-3. **Co-assembly** — merge reads → SPAdes co-assembly → CheckM2 → optional TNF optimization (rounds 1–3)
+3. **Co-assembly** — merge reads → SPAdes co-assembly → CheckM2 → TNF optimization
 4. **Quality & taxonomy** — extract CoSAG contigs → barrnap → GTDB-Tk → merge into `cluster_data_gtdbtk.json`
 5. **Report** — generate `cosag_report.html`
 
