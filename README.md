@@ -18,7 +18,7 @@
 
 ### Example output report
 
-**Preview the results**: [Interactive HTML report](http://www.biostatistics.online/CoSAG/example_report.html)
+**Preview the results**: [Interactive HTML report](http://119.3.70.71/CoSAG/cosag_report_saliva.html)
 
 The example report demonstrates assembly quality metrics, clustering summaries, taxonomic classification, co-assembly optimization outcomes, and integrated dashboards.
 
