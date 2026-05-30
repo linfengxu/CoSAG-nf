@@ -141,10 +141,10 @@ CoSAG-nf requires **paired-end short-read FASTQ** (developed and validated on Il
 
 CoSAG-nf does **not** perform raw-read QC or host decontamination. Prepare reads upstream, then list the cleaned FASTQs in your samplesheet:
 
-| Step | Recommended tools |
-| ---- | ----------------- |
-| Quality control (adapter/quality trimming) | [fastp](https://github.com/OpenGene/fastp), [Trimmomatic](http://www.usadellab.org/cms/?page=trimmomatic) |
-| Host read removal | [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/), [KneadData](https://huttenhower.sph.harvard.edu/kneaddata/) |
+| Step                                       | Recommended tools                                                                                                  |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ |
+| Quality control (adapter/quality trimming) | [fastp](https://github.com/OpenGene/fastp), [Trimmomatic](http://www.usadellab.org/cms/?page=trimmomatic)          |
+| Host read removal                          | [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/), [KneadData](https://huttenhower.sph.harvard.edu/kneaddata/) |
 
 More detail: [`docs/usage.md`](docs/usage.md#input-data-prerequisites).
 

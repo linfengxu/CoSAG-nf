@@ -10,10 +10,10 @@ For installation, containers, and databases, see the [main README](../README.md)
 
 CoSAG-nf expects **preprocessed paired-end FASTQ** files (validated on Illumina short reads; long-read and single-end data are not supported). Raw reads should be quality-filtered and, when applicable, host-decontaminated **before** building the samplesheet and launching the pipeline.
 
-| Step | Purpose | Recommended tools |
-| ---- | ------- | ----------------- |
-| Quality control | Adapter trimming, length/quality filtering | [fastp](https://github.com/OpenGene/fastp), [Trimmomatic](http://www.usadellab.org/cms/?page=trimmomatic) |
-| Host removal | Remove human or other host reads (e.g. oral microbiome samples) | [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/) (manual workflow), [KneadData](https://huttenhower.sph.harvard.edu/kneaddata/) |
+| Step            | Purpose                                                         | Recommended tools                                                                                                                    |
+| --------------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Quality control | Adapter trimming, length/quality filtering                      | [fastp](https://github.com/OpenGene/fastp), [Trimmomatic](http://www.usadellab.org/cms/?page=trimmomatic)                            |
+| Host removal    | Remove human or other host reads (e.g. oral microbiome samples) | [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/) (manual workflow), [KneadData](https://huttenhower.sph.harvard.edu/kneaddata/) |
 
 Point `forwardReads` and `reverseReads` in the samplesheet to the **final cleaned FASTQs**. CoSAG-nf does not run read QC or host decontamination internally.
 
