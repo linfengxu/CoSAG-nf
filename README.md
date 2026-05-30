@@ -30,7 +30,7 @@ The example report demonstrates assembly quality metrics, clustering summaries, 
 - **Quality assessment**: CheckM2 completeness/contamination scoring and contamination filtering
 - **Similarity analysis**: Sourmash MinHash sketching and pairwise similarity matrices
 - **Hierarchical clustering**: Clustering of related SAGs for co-assembly
-- **Co-assembly**: Merged-read SPAdes co-assembly per cluster, with optional multi-round refinement (`--cosag_rounds`)
+- **Co-assembly**: Merged-read SPAdes co-assembly per cluster
 - **TNF optimization**: Subset selection to improve co-assembly quality for high-completeness, high-contamination clusters
 - **Taxonomic classification**: GTDB-Tk on individual SAGs and final CoSAGs
 - **Interactive reporting**: Standalone `cosag_report.html` with embedded cluster JSON
@@ -321,8 +321,6 @@ MinHash clustering (step 2) supports an optional **two-round** sourmash strategy
 **Distances:** The pipeline uses Jaccard similarity from Sourmash; hierarchical clustering works on **distance = 1 − similarity** (see `--distance_metric`, default `jaccard`).
 
 **`k`-mer size:** For SAG-level clustering we recommend `--sourmash_ksize 31`; `51` (the default) was overly stringent in our oral microbiome benchmark. Tune on your data together with `--cluster_threshold`.
-
-> **Do not confuse** `--round` with `--cosag_rounds`: `--cosag_rounds` controls **internal** co-assembly iterations within Round 1 (`round2/` / `round3/` under `04_co_assemblies/`), not the standalone second workflow under `<OUTDIR>/round2/`.
 
 **Usage:**
 
