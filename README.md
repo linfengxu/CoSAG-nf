@@ -240,10 +240,27 @@ results/
 | `06_final_results/cluster_json/cluster_data_gtdbtk.json`          | Primary deliverable: integrated cluster metadata, QC, taxonomy, HQ MAG flags |
 | `06_final_results/cluster_json/cluster_data_tnf.json`             | Cluster JSON with TNF optimization results                                   |
 | `06_final_results/report/cosag_report.html`                       | Interactive HTML report (open in a browser)                                  |
+| `03_clustering_analysis/results/dendrogram.png`                   | Hierarchical clustering dendrogram (Module 2)                                |
+| `02_similarity_analysis/matrix/sourmash_similarity_matrix.tsv`    | Sourmash pairwise similarity matrix                                          |
+| `03_clustering_analysis/matrix/distance_matrix.tsv`               | Distance matrix used for hierarchical clustering                               |
 | `03_clustering_analysis/cluster_json/round1/round1_clusters.json` | Initial cluster definitions                                                  |
 | `04_co_assemblies/cluster_json/round1/updated_clusters.json`      | Post co-assembly cluster JSON                                                |
 
 Detailed output documentation: [`docs/output.md`](docs/output.md).
+
+### Interactive HTML report (`cosag_report.html`)
+
+The report is a **self-contained, dependency-light** HTML file generated from `cluster_data_gtdbtk.json`. It is meant for browsing final CoSAG outcomes without extra rendering dependencies.
+
+| Topic | In the HTML report | On disk (inspect alongside the report) |
+| ----- | ------------------ | -------------------------------------- |
+| **Module 2 — clustering** | JSON-derived summaries: cluster sizes, singleton counts, clustering efficiency, co-assembly contamination trends | Full Module 2 outputs under `02_similarity_analysis/` and `03_clustering_analysis/` — e.g. `dendrogram.png`, similarity/distance matrices, `round1_clusters.json`, clustering validation reports |
+| **Module 3 — TNF optimization** | **Cluster Details (TNF optimization)**: included vs excluded SAGs per optimized cluster, before/after CheckM2 metrics | Optimizer logs: `04_co_assemblies/tnf_optimization/logs/<CLUSTER_ID>/` |
+| **Taxonomy** | **CoSAG vs Member Taxonomy Consistency** (genus-level GTDB-Tk: Consistent / Conflict / Unknown) | Per-SAG and CoSAG GTDB-Tk tables in `05_taxonomic_classification/` and in the cluster JSON |
+
+GTDB-Tk is used for **post-hoc annotation only** and does not influence Sourmash grouping. TNF subset selection follows the greedy, forward-only procedure in Methods (removed SAGs are not re-included in later iterations).
+
+Example report: [cosag_report_saliva.html](http://119.3.70.71/CoSAG/cosag_report_saliva.html)
 
 ## Parameter configuration
 

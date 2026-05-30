@@ -102,6 +102,8 @@ Individual SAGs are assembled with SPAdes in single-cell mode, evaluated with [C
 
 Clusters are built with SciPy hierarchical clustering on the Sourmash distance matrix. Linkage method (`--cluster_linkage_method`, default `complete`), cut criterion (`--cluster_criterion`, default `inconsistent`), and threshold (`--cluster_threshold`, default `0.95`) are user-defined parameters. Each cluster in `round1_clusters.json` lists member SAG IDs and paths to merged paired-end reads used for co-assembly.
 
+These files are the authoritative Module 2 deliverables. The interactive HTML report (`06_final_results/report/cosag_report.html`) shows JSON-derived clustering summaries but does not re-embed the dendrogram or matrices; open the paths above when you need the full hierarchical clustering result.
+
 ### Co-assemblies
 
 <details markdown="1">
@@ -156,6 +158,15 @@ Taxonomic assignments from GTDB-Tk are merged into the final cluster JSON (see b
   - `cosag_report.html`: Standalone interactive HTML report with embedded cluster data. Open in a web browser to explore per-cluster assembly quality, taxonomy, and optimization history.
 
 </details>
+
+**Report vs pipeline files.** `cosag_report.html` is generated from the final cluster JSON and is intentionally self-contained (no external image or matrix dependencies). It summarizes clustering outcomes derived from the JSON (cluster sizes, singletons, efficiency, contamination trends) but does **not** embed Module 2 artifacts such as `03_clustering_analysis/results/dendrogram.png` or the similarity/distance matrices — those remain in the numbered output directories for inspection alongside the report.
+
+**What the report includes for Module 3 and taxonomy:**
+
+- **Cluster Details (TNF optimization)** — for clusters that ran optimization: member SAGs retained in the final re-assembled subset vs excluded, with before/after CheckM2 metrics (subset selection per Methods).
+- **CoSAG vs Member Taxonomy Consistency** — genus-level GTDB-Tk comparison between each CoSAG and its member SAGs (Consistent / Conflict / Unknown). GTDB-Tk is annotation-only and does not drive grouping; full per-SAG classifications are also in the cluster JSON and under `05_taxonomic_classification/`.
+
+Optimizer step traces: `04_co_assemblies/tnf_optimization/logs/<CLUSTER_ID>/`.
 
 The `cluster_data_gtdbtk.json` file is the central structured output. Each cluster entry includes member SAGs, co-assembly results per round, CheckM2 metrics, GTDB-Tk classification strings, and optional HQ MAG status. Downstream analyses should start from this file.
 
