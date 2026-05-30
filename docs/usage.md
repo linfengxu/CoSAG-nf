@@ -6,6 +6,17 @@
 
 For installation, containers, and databases, see the [main README](../README.md).
 
+## Input data prerequisites
+
+CoSAG-nf expects **preprocessed paired-end FASTQ** files (validated on Illumina short reads; long-read and single-end data are not supported). Raw reads should be quality-filtered and, when applicable, host-decontaminated **before** building the samplesheet and launching the pipeline.
+
+| Step | Purpose | Recommended tools |
+| ---- | ------- | ----------------- |
+| Quality control | Adapter trimming, length/quality filtering | [fastp](https://github.com/OpenGene/fastp), [Trimmomatic](http://www.usadellab.org/cms/?page=trimmomatic) |
+| Host removal | Remove human or other host reads (e.g. oral microbiome samples) | [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/) (manual workflow), [KneadData](https://huttenhower.sph.harvard.edu/kneaddata/) |
+
+Point `forwardReads` and `reverseReads` in the samplesheet to the **final cleaned FASTQs**. CoSAG-nf does not run read QC or host decontamination internally.
+
 ## Pipeline parameters
 
 Full parameter documentation is maintained in [`nextflow_schema.json`](../nextflow_schema.json), grouped by topic:
@@ -32,7 +43,6 @@ Browse parameters interactively: [nf-core launch](https://nf-co.re/launch) (sele
 
 | Parameter                                                        | Meaning                                                                              |
 | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| `--cosag_rounds`                                                 | Number of **internal** co-assembly rounds inside the main workflow (1–3).            |
 | `--round 2`                                                      | Run Round 1, then a **separate** Round 2 workflow; outputs under `<outdir>/round2/`. |
 | `--min_completeness` / `--max_contamination`                     | Thresholds for selecting final CoSAG contigs.                                        |
 | `--cosag_opt_min_completeness` / `--cosag_opt_max_contamination` | When to **trigger** TNF optimization on a cluster.                                   |

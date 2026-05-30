@@ -132,7 +132,21 @@ nextflow pull linfengxu/CoSAG-nf
 > - Nextflow, Singularity, and Java installed
 > - Container images available (pull from Quay/Biocontainers; see [Container images](#container-images))
 > - CheckM2 and GTDB-Tk databases available
-> - Preview expected output: [example report](http://www.biostatistics.online/CoSAG/example_report.html)
+> - **Preprocessed paired-end FASTQs** (see [Input data](#input-data) below)
+> - Preview expected output: [example report](http://119.3.70.71/CoSAG/cosag_report_saliva.html)
+
+### Input data
+
+CoSAG-nf requires **paired-end short-read FASTQ** (developed and validated on Illumina; other comparable PE platforms such as MGI or Element may work but are not benchmarked here); **long-read** (PacBio, Oxford Nanopore) and **single-end** reads are not currently supported.
+
+CoSAG-nf does **not** perform raw-read QC or host decontamination. Prepare reads upstream, then list the cleaned FASTQs in your samplesheet:
+
+| Step | Recommended tools |
+| ---- | ----------------- |
+| Quality control (adapter/quality trimming) | [fastp](https://github.com/OpenGene/fastp), [Trimmomatic](http://www.usadellab.org/cms/?page=trimmomatic) |
+| Host read removal | [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/), [KneadData](https://huttenhower.sph.harvard.edu/kneaddata/) |
+
+More detail: [`docs/usage.md`](docs/usage.md#input-data-prerequisites).
 
 ### 1. Prepare the samplesheet
 
