@@ -137,27 +137,27 @@ def calculate_summary_stats(data):
     """Calculate summary statistics from cluster data"""
     if not data or 'clusters' not in data:
         return None
-    
+
     clusters = data['clusters']
-    
+
     # Basic counts
     total_sags = sum(cluster.get('cluster_size', 0) for cluster in clusters)
     total_clusters = len(clusters)
-    
+
     # Quality assessment for co-assembly results
     high_quality_cosags = 0
     medium_quality_cosags = 0
     low_quality_cosags = 0
-    
+
     optimized_clusters = 0
     final_quality_genomes = 0
-    
+
     for cluster in clusters:
         # Check for optimization
         co_results = cluster.get('co_assembly_results', {})
         if 'optimized' in co_results:
             optimized_clusters += 1
-        
+
         # Check final genome quality using iteration data if available
         best_result = co_results.get('optimized') or co_results.get('round_1')
         if best_result:
@@ -168,7 +168,7 @@ def calculate_summary_stats(data):
             else:
                 comp = best_result.get('completeness', 0)
                 cont = best_result.get('contamination', 100)
-            
+
             # Count quality CoSAGs with separate high and medium categories
             if comp > 90 and cont < 5:
                 high_quality_cosags += 1
@@ -178,12 +178,12 @@ def calculate_summary_stats(data):
                 final_quality_genomes += 1
             else:
                 low_quality_cosags += 1
-    
+
     # Cluster size statistics
     cluster_sizes = [cluster.get('cluster_size', 0) for cluster in clusters]
     avg_cluster_size = sum(cluster_sizes) / len(cluster_sizes) if cluster_sizes else 0
     largest_cluster = max(cluster_sizes) if cluster_sizes else 0
-    
+
     return {
         'total_sags': total_sags,
         'high_quality_cosags': high_quality_cosags,
@@ -262,7 +262,7 @@ def generate_sag_table_html(data):
     """Generate SAG table HTML with embedded data"""
     if not data or 'clusters' not in data:
         return "<tr><td colspan='6'>No data available</td></tr>"
-    
+
     rows = []
     for cluster in data['clusters']:
         cluster_id = cluster.get('cluster_id', 'Unknown')
@@ -270,7 +270,7 @@ def generate_sag_table_html(data):
             sag_id = member.get('sag_id', 'Unknown')
             completeness = member.get('completeness', 0)
             contamination = member.get('contamination', 0)
-            
+
             # Determine quality
             if completeness > 90 and contamination < 5:
                 quality = 'high'
@@ -281,11 +281,11 @@ def generate_sag_table_html(data):
             else:
                 quality = 'low'
                 quality_text = 'Low'
-            
+
             # Per-member taxonomy (individual SAG GTDB), not co-assembly
             g_member = _resolve_member_gtdb(member)
             taxonomy = _classification_label_from_gtdb(g_member)
-            
+
             row = f"""
                 <tr>
                     <td>{sag_id}</td>
@@ -297,7 +297,7 @@ def generate_sag_table_html(data):
                 </tr>
             """
             rows.append(row)
-    
+
     return ''.join(rows)
 
 
@@ -305,24 +305,24 @@ def generate_cluster_table_html(data):
     """Generate cluster table HTML with embedded data"""
     if not data or 'clusters' not in data:
         return "<tr><td colspan='5'>No data available</td></tr>"
-    
+
     rows = []
     for cluster in data['clusters']:
         cluster_id = cluster.get('cluster_id', 'Unknown')
         cluster_size = cluster.get('cluster_size', 0)
-        
+
         # Get member list (with per-SAG CheckM2 quality)
         members = cluster.get('members', [])
         member_list_full = _format_member_list_plain(members)
         member_list = member_list_full
         if len(member_list) > 80:
             member_list = member_list[:80] + '...'
-        
+
         # Check optimization status
         co_results = cluster.get('co_assembly_results', {})
         has_optimized = 'optimized' in co_results
         status = 'Optimized' if has_optimized else 'Round 1 Only'
-        
+
         # Get best quality - use iteration data if available
         best_result = co_results.get('optimized') or co_results.get('round_1')
         if best_result:
@@ -333,7 +333,7 @@ def generate_cluster_table_html(data):
                 comp = best_result.get('completeness', 0)
                 cont = best_result.get('contamination', 0)
             quality = f"{comp:.1f}% / {cont:.1f}%"
-            
+
             # Only include if meets quality criteria (completeness>50 and contamination<10)
             if comp > 50 and cont < 10:
                 row = f"""
@@ -348,24 +348,24 @@ def generate_cluster_table_html(data):
                 rows.append(row)
         else:
             quality = 'N/A'
-    
+
     return ''.join(rows)
 
 
 
 def create_embedded_html_report(data, title="SAG Analysis Report", output_file="embedded_report.html"):
     """Create HTML report with embedded data"""
-    
+
     stats = calculate_summary_stats(data)
     current_date = datetime.now().strftime('%Y-%m-%d')
-    
+
     # Generate table content
     sag_table_content = generate_sag_table_html(data)
     cluster_table_content = generate_cluster_table_html(data)
-    
+
     # Embed JSON data as JavaScript variable
     json_data = json.dumps(data, indent=2, ensure_ascii=False)
-    
+
     html_content = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -627,15 +627,15 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
             .container {{
                 margin: 0;
             }}
-            
+
             .main-content {{
                 padding: 1rem;
             }}
-            
+
             .header-content h1 {{
                 font-size: 2rem;
             }}
-            
+
             .stats-grid {{
                 grid-template-columns: 1fr;
             }}
@@ -650,8 +650,8 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
                 <h1>Single-cell Amplified Genome Analysis Report</h1>
                 <p class="subtitle">Single-cell Amplified Genome Analysis & Quality Assessment</p>
                 <div class="report-info">
-                    <span id="report-title">{title}</span> | 
-                    <span id="report-date">{current_date}</span> | 
+                    <span id="report-title">{title}</span> |
+                    <span id="report-date">{current_date}</span> |
                     <span id="report-version">v1.0.0</span>
                 </div>
             </div>
@@ -700,7 +700,7 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
                         <div class="chart-container">
                             <h3 style="text-align: center; margin-bottom: 0.5rem; color: #495057;">Quality Distribution</h3>
                             <p style="text-align: center; margin-bottom: 1rem; color: #6c757d; font-size: 0.9rem; font-style: italic;">
-                                Distribution of CoSAGs by quality levels: High (>90% completeness, <5% contamination), 
+                                Distribution of CoSAGs by quality levels: High (>90% completeness, <5% contamination),
                                 Medium (≥50% completeness, <10% contamination), and Low quality
                             </p>
                             <canvas id="quality-overview-chart"></canvas>
@@ -708,18 +708,18 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
                         <div class="chart-container">
                             <h3 style="text-align: center; margin-bottom: 0.5rem; color: #495057;">Phylum Distribution</h3>
                             <p style="text-align: center; margin-bottom: 1rem; color: #6c757d; font-size: 0.9rem; font-style: italic;">
-                                Taxonomic diversity at phylum level for high and medium quality CoSAGs, 
+                                Taxonomic diversity at phylum level for high and medium quality CoSAGs,
                                 showing the most abundant bacterial phyla in the dataset
                             </p>
                             <canvas id="phylum-chart"></canvas>
                         </div>
                     </div>
-                    
+
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem;">
                         <div class="chart-container">
                             <h3 style="text-align: center; margin-bottom: 0.5rem; color: #495057;">Completeness Distribution</h3>
                             <p style="text-align: center; margin-bottom: 1rem; color: #6c757d; font-size: 0.9rem; font-style: italic;">
-                                Histogram showing completeness levels of high and medium quality CoSAGs, 
+                                Histogram showing completeness levels of high and medium quality CoSAGs,
                                 indicating genome assembly quality and gene content coverage
                             </p>
                             <canvas id="completeness-chart"></canvas>
@@ -727,17 +727,17 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
                         <div class="chart-container">
                             <h3 style="text-align: center; margin-bottom: 0.5rem; color: #495057;">Contamination Distribution</h3>
                             <p style="text-align: center; margin-bottom: 1rem; color: #6c757d; font-size: 0.9rem; font-style: italic;">
-                                Histogram showing contamination levels of high and medium quality CoSAGs, 
+                                Histogram showing contamination levels of high and medium quality CoSAGs,
                                 representing the presence of foreign genetic material
                             </p>
                             <canvas id="contamination-chart"></canvas>
                         </div>
                     </div>
-                    
+
                     <div class="chart-container" style="margin-top: 2rem;">
                         <h3 style="text-align: center; margin-bottom: 0.5rem; color: #495057;">Completeness vs Contamination</h3>
                         <p style="text-align: center; margin-bottom: 1rem; color: #6c757d; font-size: 0.9rem; font-style: italic;">
-                            Scatter plot showing the relationship between genome completeness and contamination levels. 
+                            Scatter plot showing the relationship between genome completeness and contamination levels.
                             Green dots represent high quality CoSAGs, yellow dots represent medium quality CoSAGs
                         </p>
                         <canvas id="scatter-chart"></canvas>
@@ -752,11 +752,11 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
                         </p>
                         <canvas id="taxonomy-consistency-chart"></canvas>
                     </div>
-                    
+
                     <div style="margin-top: 3rem; clear: both;">
                         <h3 style="margin-bottom: 0.5rem; color: #495057;">High and Medium Quality CoSAGs Details</h3>
                         <p style="margin-bottom: 1rem; color: #6c757d; font-size: 0.9rem; font-style: italic;">
-                            Detailed information for all CoSAGs meeting quality criteria (completeness ≥50%, contamination <10%). 
+                            Detailed information for all CoSAGs meeting quality criteria (completeness ≥50%, contamination <10%).
                             Member SAGs show single-genome CheckM2 completeness / contamination before co-assembly.
                             Use search and filters to explore specific clusters or quality levels.
                         </p>
@@ -805,13 +805,13 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
             <div id="single-sag" class="tab-content">
                 <section class="sag-quality">
                     <h2>Single SAG Quality Assessment</h2>
-                    
+
                     <!-- Quality Overview -->
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
                         <div class="chart-container">
                             <h3 style="text-align: center; margin-bottom: 0.5rem; color: #495057;">SAG Quality Distribution</h3>
                             <p style="text-align: center; margin-bottom: 1rem; color: #6c757d; font-size: 0.9rem; font-style: italic;">
-                                Distribution of individual SAGs by quality levels before co-assembly, 
+                                Distribution of individual SAGs by quality levels before co-assembly,
                                 showing the raw quality of single-cell amplified genomes
                             </p>
                             <canvas id="sag-quality-pie-chart"></canvas>
@@ -819,19 +819,19 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
                         <div class="chart-container">
                             <h3 style="text-align: center; margin-bottom: 0.5rem; color: #495057;">SAG Taxonomy Distribution</h3>
                             <p style="text-align: center; margin-bottom: 1rem; color: #6c757d; font-size: 0.9rem; font-style: italic;">
-                                Phylum-level summary from each SAG’s own GTDB-Tk classification (member annotation), 
+                                Phylum-level summary from each SAG’s own GTDB-Tk classification (member annotation),
                                 not the merged co-assembly taxonomy
                             </p>
                             <canvas id="sag-taxonomy-chart"></canvas>
                         </div>
                     </div>
-                    
+
                     <!-- Quality Distribution Charts -->
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
                         <div class="chart-container">
                             <h3 style="text-align: center; margin-bottom: 0.5rem; color: #495057;">SAG Completeness Distribution</h3>
                             <p style="text-align: center; margin-bottom: 1rem; color: #6c757d; font-size: 0.9rem; font-style: italic;">
-                                Histogram of completeness levels for all individual SAGs, 
+                                Histogram of completeness levels for all individual SAGs,
                                 showing the range of genome assembly quality before co-assembly
                             </p>
                             <canvas id="sag-completeness-chart"></canvas>
@@ -839,33 +839,33 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
                         <div class="chart-container">
                             <h3 style="text-align: center; margin-bottom: 0.5rem; color: #495057;">SAG Contamination Distribution</h3>
                             <p style="text-align: center; margin-bottom: 1rem; color: #6c757d; font-size: 0.9rem; font-style: italic;">
-                                Histogram of contamination levels for all individual SAGs, 
+                                Histogram of contamination levels for all individual SAGs,
                                 indicating the presence of foreign genetic material in single-cell data
                             </p>
                             <canvas id="sag-contamination-chart"></canvas>
                         </div>
                     </div>
-                    
+
                     <!-- Scatter Plot -->
                     <div class="chart-container" style="margin-bottom: 2rem;">
                         <h3 style="text-align: center; margin-bottom: 0.5rem; color: #495057;">SAG Quality Scatter Plot</h3>
                         <p style="text-align: center; margin-bottom: 1rem; color: #6c757d; font-size: 0.9rem; font-style: italic;">
-                            Scatter plot showing individual SAG quality distribution with color-coded quality levels. 
+                            Scatter plot showing individual SAG quality distribution with color-coded quality levels.
                             Each point represents one SAG with its completeness and contamination values
                         </p>
                         <canvas id="sag-scatter-chart"></canvas>
                     </div>
-                    
+
                     <!-- Quality vs Cluster Size Analysis -->
                     <div class="chart-container" style="margin-bottom: 2rem;">
                         <h3 style="text-align: center; margin-bottom: 0.5rem; color: #495057;">Average SAG Quality by Cluster Size</h3>
                         <p style="text-align: center; margin-bottom: 1rem; color: #6c757d; font-size: 0.9rem; font-style: italic;">
-                            Analysis of how cluster size affects average SAG quality, showing the relationship between 
+                            Analysis of how cluster size affects average SAG quality, showing the relationship between
                             clustering success and individual genome quality metrics
                         </p>
                         <canvas id="quality-vs-cluster-size-chart"></canvas>
                     </div>
-                    
+
                     <!-- SAG Details Table -->
                     <div>
                         <h3 style="margin-bottom: 0.5rem; color: #495057;">Single SAG Details</h3>
@@ -924,7 +924,7 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
             <div id="clustering" class="tab-content">
                 <section class="clustering-analysis">
                     <h2>Clustering Analysis</h2>
-                    
+
                     <!-- Statistics Overview -->
                     <div class="stats-grid">
                         <div class="stat-card">
@@ -944,13 +944,13 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
                             <div class="stat-label">Singleton Clusters</div>
                         </div>
                     </div>
-                    
+
                     <!-- Clustering Visualization Charts -->
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin: 2rem 0;">
                         <div class="chart-container">
                             <h3 style="text-align: center; margin-bottom: 0.5rem; color: #495057;">Cluster Size Distribution</h3>
                             <p style="text-align: center; margin-bottom: 1rem; color: #6c757d; font-size: 0.9rem; font-style: italic;">
-                                Distribution of clusters by size with quality breakdown. Stacked bars show high (green), 
+                                Distribution of clusters by size with quality breakdown. Stacked bars show high (green),
                                 medium (yellow), and low (red) quality clusters for each cluster size
                             </p>
                             <canvas id="cluster-size-distribution-chart"></canvas>
@@ -958,13 +958,13 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
                         <div class="chart-container">
                             <h3 style="text-align: center; margin-bottom: 0.5rem; color: #495057;">Clustering Efficiency</h3>
                             <p style="text-align: center; margin-bottom: 1rem; color: #6c757d; font-size: 0.9rem; font-style: italic;">
-                                Proportion of SAGs successfully clustered versus remaining as singletons. 
+                                Proportion of SAGs successfully clustered versus remaining as singletons.
                                 Higher clustering efficiency indicates better similarity detection
                             </p>
                             <canvas id="clustering-efficiency-chart"></canvas>
                         </div>
                     </div>
-                    
+
                     <!-- Clustering Impact Analysis -->
                     <div class="chart-container" style="margin: 2rem 0;">
                         <h3 style="text-align: center; margin-bottom: 0.5rem; color: #495057;">Contamination Reduction Through Co-assembly</h3>
@@ -973,7 +973,7 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
                         </p>
                         <canvas id="contamination-comparison-chart"></canvas>
                     </div>
-                    
+
                     <!-- TNF / optimization-focused cluster table -->
                     <div style="margin-top: 2rem;">
                         <h3 style="margin-bottom: 0.5rem; color: #495057;">Cluster Details (TNF optimization)</h3>
@@ -1194,7 +1194,7 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
                 <ul style="margin:0.2rem 0 0.5rem 1rem;font-size:0.82rem;">${{ulExc}}</ul></div>
                 ${{why}}${{note}}</details>`;
         }}
-        
+
         // Tab switching functionality
         function showTab(tabName) {{
             // Hide all tab contents
@@ -1235,26 +1235,26 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
         function filterSAGs() {{
             const searchTerm = document.getElementById('sag-search')?.value.toLowerCase() || '';
             const qualityFilter = document.getElementById('quality-filter')?.value || 'all';
-            
+
             const tbody = document.getElementById('sag-table-body');
             if (!tbody) return;
 
             const rows = tbody.querySelectorAll('tr');
-            
+
             rows.forEach(row => {{
                 const sagId = row.cells[0].textContent.toLowerCase();
                 const clusterId = row.cells[3].textContent.toLowerCase();
                 const taxonomy = row.cells[5].textContent.toLowerCase();
                 const qualityBadge = row.querySelector('.quality-badge');
                 const quality = qualityBadge ? qualityBadge.textContent.trim().toLowerCase() : '';
-                
-                const matchesSearch = !searchTerm || 
-                    sagId.includes(searchTerm) || 
-                    clusterId.includes(searchTerm) || 
+
+                const matchesSearch = !searchTerm ||
+                    sagId.includes(searchTerm) ||
+                    clusterId.includes(searchTerm) ||
                     taxonomy.includes(searchTerm);
-                
+
                 const matchesQuality = qualityFilter === 'all' || quality === qualityFilter;
-                
+
                 row.style.display = matchesSearch && matchesQuality ? '' : 'none';
             }});
         }}
@@ -1266,17 +1266,17 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
 
             // Calculate quality distribution for CoSAGs
             let highCount = 0, mediumCount = 0, lowCount = 0;
-            
+
             if (clusterData && clusterData.clusters) {{
                 clusterData.clusters.forEach(cluster => {{
                     const coResults = cluster.co_assembly_results || {{}};
                     const bestResult = coResults.optimized || coResults.round_1;
-                    
+
                     if (bestResult) {{
                         // Use iteration data if available
                         const comp = bestResult.completeness || 0;
                         const cont = bestResult.contamination || 0;
-                        
+
                         if (comp > 90 && cont < 5) {{
                             highCount++;
                         }} else if (comp > 50 && cont < 10) {{
@@ -1322,7 +1322,7 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
                     }}
                 }}
             }});
-            
+
             // Create completeness and contamination charts
             createPhylumChart();
             createCompletenessChart();
@@ -1415,19 +1415,19 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
 
             // Collect phylum data for high and medium quality CoSAGs
             const phylumCounts = {{}};
-            
+
             if (clusterData && clusterData.clusters) {{
                 clusterData.clusters.forEach(cluster => {{
                     const bestResult = resolveBestCoSagResult(cluster);
-                    
+
                     if (bestResult) {{
                         const comp = bestResult.completeness || 0;
                         const cont = bestResult.contamination || 0;
-                        
+
                         // Only include high and medium quality CoSAGs
                         if (comp > 50 && cont < 10) {{
                             let phylum = 'Unknown';
-                            
+
                             // Extract phylum from taxonomy
                             const cosagGtdb = resolveCoSagGtdb(cluster, bestResult);
                             if (cosagGtdb && cosagGtdb.taxonomy) {{
@@ -1438,7 +1438,7 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
                                     phylum = phylum.replace(/^p__/, '');
                                 }}
                             }}
-                            
+
                             phylumCounts[phylum] = (phylumCounts[phylum] || 0) + 1;
                         }}
                     }}
@@ -1448,13 +1448,13 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
             // Convert to arrays for Chart.js
             const phylumEntries = Object.entries(phylumCounts);
             phylumEntries.sort((a, b) => b[1] - a[1]); // Sort by count descending
-            
+
             // Limit to top 8 phyla, group others as "Others"
             const maxPhyla = 8;
             let labels = [];
             let data = [];
             let othersCount = 0;
-            
+
             phylumEntries.forEach((entry, index) => {{
                 if (index < maxPhyla) {{
                     labels.push(entry[0]);
@@ -1463,7 +1463,7 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
                     othersCount += entry[1];
                 }}
             }});
-            
+
             if (othersCount > 0) {{
                 labels.push('Others');
                 data.push(othersCount);
@@ -1543,16 +1543,16 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
 
             // Collect completeness data for high and medium quality CoSAGs
             const completenessData = [];
-            
+
             if (clusterData && clusterData.clusters) {{
                 clusterData.clusters.forEach(cluster => {{
                     const coResults = cluster.co_assembly_results || {{}};
                     const bestResult = coResults.optimized || coResults.round_1;
-                    
+
                     if (bestResult) {{
                         const comp = bestResult.completeness || 0;
                         const cont = bestResult.contamination || 0;
-                        
+
                         // Only include high and medium quality CoSAGs
                         if (comp > 50 && cont < 10) {{
                             completenessData.push(comp);
@@ -1624,16 +1624,16 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
 
             // Collect contamination data for high and medium quality CoSAGs
             const contaminationData = [];
-            
+
             if (clusterData && clusterData.clusters) {{
                 clusterData.clusters.forEach(cluster => {{
                     const coResults = cluster.co_assembly_results || {{}};
                     const bestResult = coResults.optimized || coResults.round_1;
-                    
+
                     if (bestResult) {{
                         const comp = bestResult.completeness || 0;
                         const cont = bestResult.contamination || 0;
-                        
+
                         // Only include high and medium quality CoSAGs
                         if (comp > 50 && cont < 10) {{
                             contaminationData.push(cont);
@@ -1706,16 +1706,16 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
             // Collect data for high and medium quality CoSAGs separately
             const highQualityData = [];
             const mediumQualityData = [];
-            
+
             if (clusterData && clusterData.clusters) {{
                 clusterData.clusters.forEach(cluster => {{
                     const coResults = cluster.co_assembly_results || {{}};
                     const bestResult = coResults.optimized || coResults.round_1;
-                    
+
                     if (bestResult) {{
                         const comp = bestResult.completeness || 0;
                         const cont = bestResult.contamination || 0;
-                        
+
                         // Categorize by quality
                         if (comp > 90 && cont < 5) {{
                             // High quality
@@ -1942,36 +1942,36 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
         // Populate CoSAGs table
         function populateCoSAGsTable() {{
             allCoSAGsData = [];
-            
+
             if (clusterData && clusterData.clusters) {{
                 clusterData.clusters.forEach(cluster => {{
                     const coResults = cluster.co_assembly_results || {{}};
                     const bestResult = resolveBestCoSagResult(cluster);
-                    
+
                     if (bestResult) {{
                         const comp = bestResult.completeness || 0;
                         const cont = bestResult.contamination || 0;
-                        
+
                         // Only include high and medium quality CoSAGs
                         if (comp > 50 && cont < 10) {{
                             const cosagGtdb = resolveCoSagGtdb(cluster, bestResult);
                             const taxonomy = getClassificationLabel(cosagGtdb);
-                            
+
                             // Get member list with single-SAG CheckM2 quality
                             const members = cluster.members || [];
                             const memberList = formatMemberListPlain(members);
                             const membersHtml = formatMemberListCell(members);
                             const r1ClusterList = getR1ClusterList(cluster, members).join(', ');
-                            
+
                             // Get genome size
                             const genomeSize = bestResult.genome_size || 0;
-                            
+
                             // Determine quality level
                             let quality = 'Medium';
                             if (comp > 90 && cont < 5) {{
                                 quality = 'High';
                             }}
-                            
+
                             allCoSAGsData.push({{
                                 cluster_id: cluster.cluster_id || 'Unknown',
                                 cluster_size: cluster.cluster_size || 0,
@@ -1989,7 +1989,7 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
                     }}
                 }});
             }}
-            
+
             filteredCoSAGsData = [...allCoSAGsData];
             displayCoSAGsTable();
         }}
@@ -1998,11 +1998,11 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
         function displayCoSAGsTable() {{
             const tbody = document.getElementById('cosag-table-body');
             if (!tbody) return;
-            
+
             const startIndex = (currentPage - 1) * itemsPerPage;
             const endIndex = startIndex + itemsPerPage;
             const pageData = filteredCoSAGsData.slice(startIndex, endIndex);
-            
+
             tbody.innerHTML = pageData.map(item => `
                 <tr>
                     <td>${{item.cluster_id}}</td>
@@ -2024,7 +2024,7 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
                     <td title="${{item.r1_clusters}}">${{item.r1_clusters.length > 50 ? item.r1_clusters.substring(0, 50) + '...' : item.r1_clusters}}</td>
                 </tr>
             `).join('');
-            
+
             updatePagination();
         }}
 
@@ -2032,47 +2032,47 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
         function updatePagination() {{
             const paginationDiv = document.getElementById('cosag-pagination');
             if (!paginationDiv) return;
-            
+
             const totalPages = Math.ceil(filteredCoSAGsData.length / itemsPerPage);
             const totalItems = filteredCoSAGsData.length;
             const startItem = (currentPage - 1) * itemsPerPage + 1;
             const endItem = Math.min(currentPage * itemsPerPage, totalItems);
-            
+
             let paginationHTML = `
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
                     <div>Showing ${{startItem}}-${{endItem}} of ${{totalItems}} CoSAGs</div>
                     <div style="display: flex; gap: 0.5rem; align-items: center;">
             `;
-            
+
             // Previous button
             if (currentPage > 1) {{
                 paginationHTML += `<button onclick="changePage(${{currentPage - 1}})" style="padding: 0.5rem 1rem; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer;">Previous</button>`;
             }}
-            
+
             // Page numbers
             const maxVisiblePages = 5;
             let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
             let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-            
+
             if (endPage - startPage + 1 < maxVisiblePages) {{
                 startPage = Math.max(1, endPage - maxVisiblePages + 1);
             }}
-            
+
             for (let i = startPage; i <= endPage; i++) {{
                 const isActive = i === currentPage;
                 paginationHTML += `<button onclick="changePage(${{i}})" style="padding: 0.5rem 1rem; background: ${{isActive ? '#495057' : '#f8f9fa'}}; color: ${{isActive ? 'white' : '#495057'}}; border: 1px solid #dee2e6; border-radius: 4px; cursor: pointer;">${{i}}</button>`;
             }}
-            
+
             // Next button
             if (currentPage < totalPages) {{
                 paginationHTML += `<button onclick="changePage(${{currentPage + 1}})" style="padding: 0.5rem 1rem; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer;">Next</button>`;
             }}
-            
+
             paginationHTML += `
                     </div>
                 </div>
             `;
-            
+
             paginationDiv.innerHTML = paginationHTML;
         }}
 
@@ -2085,7 +2085,7 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
         // Filter CoSAGs
         function filterCoSAGs() {{
             const searchTerm = document.getElementById('cosag-search')?.value.toLowerCase() || '';
-            
+
             filteredCoSAGsData = allCoSAGsData.filter(item => {{
                 return item.cluster_id.toLowerCase().includes(searchTerm) ||
                        item.taxonomy.toLowerCase().includes(searchTerm) ||
@@ -2093,7 +2093,7 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
                        item.r1_clusters.toLowerCase().includes(searchTerm) ||
                        item.genome_size.toString().includes(searchTerm);
             }});
-            
+
             currentPage = 1;
             displayCoSAGsTable();
         }}
@@ -2101,7 +2101,7 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
         // Sort CoSAGs
         function sortCoSAGs() {{
             const sortBy = document.getElementById('cosag-sort')?.value || 'cluster_id';
-            
+
             filteredCoSAGsData.sort((a, b) => {{
                 switch (sortBy) {{
                     case 'completeness':
@@ -2124,7 +2124,7 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
                         return a.cluster_id.localeCompare(b.cluster_id);
                 }}
             }});
-            
+
             currentPage = 1;
             displayCoSAGsTable();
         }}
@@ -2147,7 +2147,7 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
                     `"${{item.r1_clusters}}"`
                 ].join(','))
             ].join('\\n');
-            
+
             const blob = new Blob([csvContent], {{ type: 'text/csv;charset=utf-8;' }});
             const link = document.createElement('a');
             const url = URL.createObjectURL(blob);
@@ -2182,13 +2182,13 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
 
             // Calculate quality distribution for all SAGs
             let highCount = 0, mediumCount = 0, lowCount = 0;
-            
+
             if (clusterData && clusterData.clusters) {{
                 clusterData.clusters.forEach(cluster => {{
                     cluster.members.forEach(member => {{
                         const comp = member.completeness || 0;
                         const cont = member.contamination || 0;
-                        
+
                         if (comp > 90 && cont < 5) {{
                             highCount++;
                         }} else if (comp > 50 && cont < 10) {{
@@ -2243,7 +2243,7 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
 
             // Collect taxonomy data for all SAGs
             const phylumCounts = {{}};
-            
+
             if (clusterData && clusterData.clusters) {{
                 clusterData.clusters.forEach(cluster => {{
                     cluster.members.forEach(member => {{
@@ -2259,13 +2259,13 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
             // Convert to arrays for Chart.js
             const phylumEntries = Object.entries(phylumCounts);
             phylumEntries.sort((a, b) => b[1] - a[1]); // Sort by count descending
-            
+
             // Limit to top 8 phyla, group others as "Others"
             const maxPhyla = 8;
             let labels = [];
             let data = [];
             let othersCount = 0;
-            
+
             phylumEntries.forEach((entry, index) => {{
                 if (index < maxPhyla) {{
                     labels.push(entry[0]);
@@ -2274,7 +2274,7 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
                     othersCount += entry[1];
                 }}
             }});
-            
+
             if (othersCount > 0) {{
                 labels.push('Others');
                 data.push(othersCount);
@@ -2353,7 +2353,7 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
 
             // Collect completeness data for all SAGs
             const completenessData = [];
-            
+
             if (clusterData && clusterData.clusters) {{
                 clusterData.clusters.forEach(cluster => {{
                     cluster.members.forEach(member => {{
@@ -2431,7 +2431,7 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
 
             // Collect contamination data for all SAGs
             const contaminationData = [];
-            
+
             if (clusterData && clusterData.clusters) {{
                 clusterData.clusters.forEach(cluster => {{
                     cluster.members.forEach(member => {{
@@ -2505,13 +2505,13 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
 
             // Collect data for all SAGs with quality color coding
             const scatterData = [];
-            
+
             if (clusterData && clusterData.clusters) {{
                 clusterData.clusters.forEach(cluster => {{
                     cluster.members.forEach(member => {{
                         const comp = member.completeness || 0;
                         const cont = member.contamination || 0;
-                        
+
                         // Determine quality and color
                         let quality, color;
                         if (comp > 90 && cont < 5) {{
@@ -2524,7 +2524,7 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
                             quality = 'Low';
                             color = '#dc3545';
                         }}
-                        
+
                         scatterData.push({{
                             x: cont,
                             y: comp,
@@ -2598,7 +2598,7 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
 
             // Collect cluster size data
             const clusterSizes = [];
-            
+
             if (clusterData && clusterData.clusters) {{
                 clusterData.clusters.forEach(cluster => {{
                     const size = cluster.cluster_size || 0;
@@ -2670,20 +2670,20 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
 
             // Collect data for quality vs cluster size analysis
             const clusterData_analysis = [];
-            
+
             if (clusterData && clusterData.clusters) {{
                 clusterData.clusters.forEach(cluster => {{
                     const size = cluster.cluster_size || 0;
                     let totalCompleteness = 0;
                     let totalContamination = 0;
                     let memberCount = 0;
-                    
+
                     cluster.members.forEach(member => {{
                         totalCompleteness += member.completeness || 0;
                         totalContamination += member.contamination || 0;
                         memberCount++;
                     }});
-                    
+
                     if (memberCount > 0) {{
                         clusterData_analysis.push({{
                             size: size,
@@ -2789,14 +2789,14 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
         // Populate SAGs table
         function populateSAGsTable() {{
             allSAGsData = [];
-            
+
             if (clusterData && clusterData.clusters) {{
                 clusterData.clusters.forEach(cluster => {{
                     cluster.members.forEach(member => {{
                         const taxonomy = getMemberTaxonomyLabel(member);
                         const comp = member.completeness || 0;
                         const cont = member.contamination || 0;
-                        
+
                         // Determine quality
                         let quality;
                         if (comp > 90 && cont < 5) {{
@@ -2806,7 +2806,7 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
                         }} else {{
                             quality = 'Low';
                         }}
-                        
+
                         allSAGsData.push({{
                             sag_id: member.sag_id || 'Unknown',
                             completeness: comp,
@@ -2818,7 +2818,7 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
                     }});
                 }});
             }}
-            
+
             filteredSAGsData = [...allSAGsData];
             displaySAGsTable();
         }}
@@ -2827,11 +2827,11 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
         function displaySAGsTable() {{
             const tbody = document.getElementById('sag-table-body');
             if (!tbody) return;
-            
+
             const startIndex = (currentSAGPage - 1) * sagItemsPerPage;
             const endIndex = startIndex + sagItemsPerPage;
             const pageData = filteredSAGsData.slice(startIndex, endIndex);
-            
+
             tbody.innerHTML = pageData.map(item => `
                 <tr>
                     <td>${{item.sag_id}}</td>
@@ -2842,7 +2842,7 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
                     <td style="font-style: italic; max-width: 300px; word-wrap: break-word; font-size: 0.85rem;" title="${{item.taxonomy}}">${{item.taxonomy}}</td>
                 </tr>
             `).join('');
-            
+
             updateSAGPagination();
         }}
 
@@ -2850,47 +2850,47 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
         function updateSAGPagination() {{
             const paginationDiv = document.getElementById('sag-pagination');
             if (!paginationDiv) return;
-            
+
             const totalPages = Math.ceil(filteredSAGsData.length / sagItemsPerPage);
             const totalItems = filteredSAGsData.length;
             const startItem = (currentSAGPage - 1) * sagItemsPerPage + 1;
             const endItem = Math.min(currentSAGPage * sagItemsPerPage, totalItems);
-            
+
             let paginationHTML = `
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
                     <div>Showing ${{startItem}}-${{endItem}} of ${{totalItems}} SAGs</div>
                     <div style="display: flex; gap: 0.5rem; align-items: center;">
             `;
-            
+
             // Previous button
             if (currentSAGPage > 1) {{
                 paginationHTML += `<button onclick="changeSAGPage(${{currentSAGPage - 1}})" style="padding: 0.5rem 1rem; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer;">Previous</button>`;
             }}
-            
+
             // Page numbers
             const maxVisiblePages = 5;
             let startPage = Math.max(1, currentSAGPage - Math.floor(maxVisiblePages / 2));
             let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-            
+
             if (endPage - startPage + 1 < maxVisiblePages) {{
                 startPage = Math.max(1, endPage - maxVisiblePages + 1);
             }}
-            
+
             for (let i = startPage; i <= endPage; i++) {{
                 const isActive = i === currentSAGPage;
                 paginationHTML += `<button onclick="changeSAGPage(${{i}})" style="padding: 0.5rem 1rem; background: ${{isActive ? '#495057' : '#f8f9fa'}}; color: ${{isActive ? 'white' : '#495057'}}; border: 1px solid #dee2e6; border-radius: 4px; cursor: pointer;">${{i}}</button>`;
             }}
-            
+
             // Next button
             if (currentSAGPage < totalPages) {{
                 paginationHTML += `<button onclick="changeSAGPage(${{currentSAGPage + 1}})" style="padding: 0.5rem 1rem; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer;">Next</button>`;
             }}
-            
+
             paginationHTML += `
                     </div>
                 </div>
             `;
-            
+
             paginationDiv.innerHTML = paginationHTML;
         }}
 
@@ -2905,16 +2905,16 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
             const searchTerm = document.getElementById('sag-search')?.value.toLowerCase() || '';
             const qualityFilter = document.getElementById('quality-filter')?.value || 'all';
             const taxonomyFilter = document.getElementById('taxonomy-filter')?.value || 'all';
-            
+
             filteredSAGsData = allSAGsData.filter(item => {{
-                const matchesSearch = !searchTerm || 
+                const matchesSearch = !searchTerm ||
                     item.sag_id.toLowerCase().includes(searchTerm) ||
                     item.cluster_id.toLowerCase().includes(searchTerm) ||
                     item.taxonomy.toLowerCase().includes(searchTerm);
-                
-                const matchesQuality = qualityFilter === 'all' || 
+
+                const matchesQuality = qualityFilter === 'all' ||
                     item.quality.toLowerCase() === qualityFilter;
-                
+
                 let matchesTaxonomy = true;
                 if (taxonomyFilter !== 'all') {{
                     if (taxonomyFilter === 'annotated') {{
@@ -2923,10 +2923,10 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
                         matchesTaxonomy = item.taxonomy === 'Unknown';
                     }}
                 }}
-                
+
                 return matchesSearch && matchesQuality && matchesTaxonomy;
             }});
-            
+
             currentSAGPage = 1;
             displaySAGsTable();
         }}
@@ -2934,7 +2934,7 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
         // Sort SAGs
         function sortSAGs() {{
             const sortBy = document.getElementById('sag-sort')?.value || 'sag_id';
-            
+
             filteredSAGsData.sort((a, b) => {{
                 switch (sortBy) {{
                     case 'completeness':
@@ -2951,7 +2951,7 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
                         return a.sag_id.localeCompare(b.sag_id);
                 }}
             }});
-            
+
             currentSAGPage = 1;
             displaySAGsTable();
         }}
@@ -2970,7 +2970,7 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
                     `"${{item.taxonomy}}"`
                 ].join(','))
             ].join('\\n');
-            
+
             const blob = new Blob([csvContent], {{ type: 'text/csv;charset=utf-8;' }});
             const link = document.createElement('a');
             const url = URL.createObjectURL(blob);
@@ -3003,28 +3003,28 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
 
             // Collect data by size and quality
             const sizeQualityData = {{}};
-            
+
             if (clusterData && clusterData.clusters) {{
                 clusterData.clusters.forEach(cluster => {{
                     const size = cluster.cluster_size || 0;
                     const sizeKey = size > 10 ? '10+' : size.toString();
-                    
+
                     // Determine cluster quality based on co-assembly results
                     const coResults = cluster.co_assembly_results || {{}};
                     const bestResult = coResults.optimized || coResults.round_1;
                     let quality = 'Low';
-                    
+
                     if (bestResult) {{
                         const comp = bestResult.completeness || 0;
                         const cont = bestResult.contamination || 100;
-                        
+
                         if (comp > 90 && cont < 5) {{
                             quality = 'High';
                         }} else if (comp > 50 && cont < 10) {{
                             quality = 'Medium';
                         }}
                     }}
-                    
+
                     if (!sizeQualityData[sizeKey]) {{
                         sizeQualityData[sizeKey] = {{ High: 0, Medium: 0, Low: 0 }};
                     }}
@@ -3127,7 +3127,7 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
             let totalSAGs = 0;
             let clusteredSAGs = 0;
             let singletonSAGs = 0;
-            
+
             if (clusterData && clusterData.clusters) {{
                 clusterData.clusters.forEach(cluster => {{
                     const size = cluster.cluster_size || 0;
@@ -3186,18 +3186,18 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
             const afterData = [];
             const labels = [];
             const reductions = [];
-            
+
             if (clusterData && clusterData.clusters) {{
                 clusterData.clusters.forEach(cluster => {{
                     const coResults = cluster.co_assembly_results || {{}};
                     const round1 = coResults.round_1;
                     const optimized = coResults.optimized;
-                    
+
                     if (round1 && optimized && cluster.cluster_size > 1) {{
                         const beforeCont = round1.contamination || 0;
                         const afterCont = optimized.contamination || 0;
                         const reduction = beforeCont - afterCont; // Positive means contamination decreased (good)
-                        
+
                         // Only show clusters with meaningful contamination changes (>0.2% reduction or any increase)
                         if (Math.abs(reduction) > 0.2) {{
                             beforeData.push(beforeCont);
@@ -3305,7 +3305,7 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
         // Populate clusters table (TNF / optimization before vs after only)
         function populateClustersTable() {{
             allClustersData = [];
-            
+
             if (clusterData && clusterData.clusters) {{
                 clusterData.clusters.forEach(cluster => {{
                     const coResults = cluster.co_assembly_results || {{}};
@@ -3385,7 +3385,7 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
                     }});
                 }});
             }}
-            
+
             filteredClustersData = [...allClustersData];
             displayClustersTable();
         }}
@@ -3394,11 +3394,11 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
         function displayClustersTable() {{
             const tbody = document.getElementById('cluster-table-body');
             if (!tbody) return;
-            
+
             const startIndex = (currentClusterPage - 1) * clusterItemsPerPage;
             const endIndex = startIndex + clusterItemsPerPage;
             const pageData = filteredClustersData.slice(startIndex, endIndex);
-            
+
             if (pageData.length === 0) {{
                 tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;color:#6c757d;padding:1.5rem;">No optimized clusters in this report (no <code>tnf_optimized</code> / <code>optimized</code> vs initial co-assembly).</td></tr>`;
                 updateClusterPagination();
@@ -3419,7 +3419,7 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
                     <td style="font-style: italic; max-width: 260px; word-wrap: break-word; font-size: 0.82rem;" title="${{item.taxonomy}}">${{item.taxonomy}}</td>
                 </tr>
             `).join('');
-            
+
             updateClusterPagination();
         }}
 
@@ -3427,47 +3427,47 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
         function updateClusterPagination() {{
             const paginationDiv = document.getElementById('cluster-pagination');
             if (!paginationDiv) return;
-            
+
             const totalPages = Math.ceil(filteredClustersData.length / clusterItemsPerPage);
             const totalItems = filteredClustersData.length;
             const startItem = (currentClusterPage - 1) * clusterItemsPerPage + 1;
             const endItem = Math.min(currentClusterPage * clusterItemsPerPage, totalItems);
-            
+
             let paginationHTML = `
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
                     <div>Showing ${{startItem}}-${{endItem}} of ${{totalItems}} clusters</div>
                     <div style="display: flex; gap: 0.5rem; align-items: center;">
             `;
-            
+
             // Previous button
             if (currentClusterPage > 1) {{
                 paginationHTML += `<button onclick="changeClusterPage(${{currentClusterPage - 1}})" style="padding: 0.5rem 1rem; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer;">Previous</button>`;
             }}
-            
+
             // Page numbers
             const maxVisiblePages = 5;
             let startPage = Math.max(1, currentClusterPage - Math.floor(maxVisiblePages / 2));
             let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-            
+
             if (endPage - startPage + 1 < maxVisiblePages) {{
                 startPage = Math.max(1, endPage - maxVisiblePages + 1);
             }}
-            
+
             for (let i = startPage; i <= endPage; i++) {{
                 const isActive = i === currentClusterPage;
                 paginationHTML += `<button onclick="changeClusterPage(${{i}})" style="padding: 0.5rem 1rem; background: ${{isActive ? '#495057' : '#f8f9fa'}}; color: ${{isActive ? 'white' : '#495057'}}; border: 1px solid #dee2e6; border-radius: 4px; cursor: pointer;">${{i}}</button>`;
             }}
-            
+
             // Next button
             if (currentClusterPage < totalPages) {{
                 paginationHTML += `<button onclick="changeClusterPage(${{currentClusterPage + 1}})" style="padding: 0.5rem 1rem; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer;">Next</button>`;
             }}
-            
+
             paginationHTML += `
                     </div>
                 </div>
             `;
-            
+
             paginationDiv.innerHTML = paginationHTML;
         }}
 
@@ -3482,9 +3482,9 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
             const searchTerm = document.getElementById('cluster-search')?.value.toLowerCase() || '';
             const sizeFilter = document.getElementById('cluster-size-filter')?.value || 'all';
             const taxonomyFilter = document.getElementById('cluster-taxonomy-filter')?.value || 'all';
-            
+
             filteredClustersData = allClustersData.filter(item => {{
-                const matchesSearch = !searchTerm || 
+                const matchesSearch = !searchTerm ||
                     item.cluster_id.toLowerCase().includes(searchTerm) ||
                     item.members.toLowerCase().includes(searchTerm) ||
                     item.r1_clusters.toLowerCase().includes(searchTerm) ||
@@ -3492,7 +3492,7 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
                     item.improvement.toLowerCase().includes(searchTerm) ||
                     String(item.tnf_sags).toLowerCase().includes(searchTerm) ||
                     (item.inclusion_search && item.inclusion_search.includes(searchTerm));
-                
+
                 let matchesSize = true;
                 if (sizeFilter !== 'all') {{
                     if (sizeFilter === '1') {{
@@ -3505,7 +3505,7 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
                         matchesSize = item.size >= 6;
                     }}
                 }}
-                
+
                 let matchesTaxonomy = true;
                 if (taxonomyFilter !== 'all') {{
                     if (taxonomyFilter === 'unknown') {{
@@ -3514,10 +3514,10 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
                         matchesTaxonomy = item.taxonomy !== 'Unknown' && item.taxonomy !== 'N/A' && item.taxonomy !== '';
                     }}
                 }}
-                
+
                 return matchesSearch && matchesSize && matchesTaxonomy;
             }});
-            
+
             currentClusterPage = 1;
             displayClustersTable();
         }}
@@ -3525,7 +3525,7 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
         // Sort clusters
         function sortClusters() {{
             const sortBy = document.getElementById('cluster-sort')?.value || 'cluster_id';
-            
+
             filteredClustersData.sort((a, b) => {{
                 switch (sortBy) {{
                     case 'size':
@@ -3545,7 +3545,7 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
                         return a.cluster_id.localeCompare(b.cluster_id);
                 }}
             }});
-            
+
             currentClusterPage = 1;
             displayClustersTable();
         }}
@@ -3584,7 +3584,7 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
                 ].join(',');
                 }})
             ].join('\\n');
-            
+
             const blob = new Blob([csvContent], {{ type: 'text/csv;charset=utf-8;' }});
             const link = document.createElement('a');
             const url = URL.createObjectURL(blob);
@@ -3607,7 +3607,7 @@ def create_embedded_html_report(data, title="SAG Analysis Report", output_file="
     # Write HTML file
     with open(output_file, 'w', encoding='utf-8') as f:
         f.write(html_content)
-    
+
     return True
 
 
@@ -3616,28 +3616,28 @@ def main():
     parser.add_argument('json_file', help='Input cluster data JSON file')
     parser.add_argument('-o', '--output', default='embedded_report.html', help='Output HTML file')
     parser.add_argument('-t', '--title', default='SAG Analysis Report', help='Report title')
-    
+
     args = parser.parse_args()
-    
+
     # Check if input file exists
     if not os.path.exists(args.json_file):
         print(f"Error: Input file '{args.json_file}' not found!")
         sys.exit(1)
-    
+
     # Load data
     print(f"Loading data from {args.json_file}...")
     data = load_cluster_data(args.json_file)
     if not data:
         sys.exit(1)
     data = normalize_for_report(data)
-    
+
     # Generate report
     print(f"Creating embedded HTML report...")
     success = create_embedded_html_report(data, args.title, args.output)
-    
+
     if success:
         print(f"HTML report created successfully: {args.output}")
-        
+
         # Show summary
         stats = calculate_summary_stats(data)
         if stats:
@@ -3647,7 +3647,7 @@ def main():
             print(f"  Total Clusters: {stats['total_clusters']}")
             print(f"  Optimized Clusters: {stats['optimized_clusters']}")
             print(f"  Final Quality Genomes: {stats['final_quality_genomes']}")
-        
+
         print(f"\nYou can now open {args.output} directly in your browser!")
     else:
         print("Failed to create report!")
