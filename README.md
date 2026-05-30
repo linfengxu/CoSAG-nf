@@ -371,7 +371,7 @@ Override any process image in [`conf/modules.config`](conf/modules.config) witho
 
 ### CheckM2
 
-Download the CheckM2 reference database following the [CheckM2 documentation](https://github.com/CheckM-CheckM2/CheckM2#database-installation), then set:
+Download the CheckM2 reference database following the [CheckM2 documentation](https://github.com/chklovski/CheckM2#database), then set:
 
 ```bash
 --checkm2_db /path/to/checkm2_database/uniref100.KO.1.dmnd
